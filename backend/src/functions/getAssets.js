@@ -1,4 +1,6 @@
 const { app } = require('@azure/functions');
+const sql = require('mssql');
+const dbConfig = require('../../dbConfig');
 
 app.http('getAssets', {
     methods: ['GET'],
@@ -6,15 +8,22 @@ app.http('getAssets', {
     handler: async (request, context) => {
         context.log(`getAssets called at "${request.url}"`);
 
-        const assets = [
-            { id: 1, name:"Raspberry Pi 4", location:"ABCD"},
-            { id: 2, name:"BBC micro:bit", location:"CDEF"}
-        ];
-
-        return { 
-            status: 200,
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(assets)
-        };
+        try {
+            const pool = await sql.connect(dbConfig);
+            const result = await pool.request().query('SELECT * FROM dbo.Assets');
+            const assets = result.recordset;
+        
+            return { 
+                status: 200,
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(assets)
+            };
+        } catch (err) {
+            context.log.error('Database error: ', err);
+            return {
+                status: 500,
+                body: "Failed to retrieve assets from database."
+            }
+        }
     }
 });
