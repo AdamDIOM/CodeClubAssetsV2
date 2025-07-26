@@ -71,4 +71,4 @@ jobs:
           slot-name: 'Production'
           package: .
           scm-do-build-during-deployment: true
-          
+          respect-funcignore: true
