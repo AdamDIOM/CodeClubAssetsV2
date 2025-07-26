@@ -70,4 +70,5 @@ jobs:
           app-name: 'assets'
           slot-name: 'Production'
           package: .
+          scm-do-build-during-deployment: true
           
