@@ -45,6 +45,13 @@ export default function Home() {
                 </div>
                 
             </section>
+
+            <AuthenticatedTemplate>
+                <section className="mb-12">
+                    <h2 className="text-2xl font-bold mb-6">Statistics</h2>
+                    <p>Coming soon... {/* eg number of assets, number of loans */}</p>
+                </section>
+            </AuthenticatedTemplate>
         </>
     )
 }
