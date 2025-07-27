@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies and build
         run: |
           cd ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          npm ci
+          npm ci --only=production
           npm run build --if-present
 
       - name: Upload artifact for deployment job
