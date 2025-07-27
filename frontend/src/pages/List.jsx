@@ -11,7 +11,7 @@ export default function List() {
     useEffect(() => {
         const fetchAssets = async() => {
             const request = {
-                scopes: ['api://3aa70f4c-6909-497b-b2d1-b72b8a7aa70a/access_as_user'],
+                scopes: [import.meta.env.VITE_BACKEND_API_SCOPE],
                 account: accounts[0]
             };
 
@@ -21,7 +21,7 @@ export default function List() {
 
                 console.log("token: " + accessToken);
 
-                const res = await fetch("https://assets-b3d4gjhmf3g4cfda.ukwest-01.azurewebsites.net/api/getAssets", {
+                const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/getAssets`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     }
