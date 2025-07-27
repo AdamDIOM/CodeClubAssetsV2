@@ -15,10 +15,10 @@ export default function AuthButtons() {
         <>
             <AuthenticatedTemplate>
                 <p>Hello, {account?.name}</p>
-                <button onClick={logout}>Sign out</button>
+                <button onClick={logout} className='hover:underline'>Sign out</button>
             </AuthenticatedTemplate>
             <UnauthenticatedTemplate>
-                <button onClick={login}>Sign in with Microsoft</button>
+                <button onClick={login} className='hover:underline'>Sign in with Microsoft</button>
             </UnauthenticatedTemplate>
         </>
     )
