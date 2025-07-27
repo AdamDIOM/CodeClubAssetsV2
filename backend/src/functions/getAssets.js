@@ -8,9 +8,14 @@ app.http('getAssets', {
     handler: async (request, context) => {
         context.log(`getAssets called at "${request.url}"`);
 
+        const searchTerm = request.query.get('f') || '';
+        console.log(searchTerm)
+
         try {
             const pool = await sql.connect(dbConfig);
-            const result = await pool.request().query('SELECT * FROM dbo.Assets');
+            const result = await pool.request()
+                .input('searchTerm', sql.NVarChar, `%${searchTerm}%`)
+                .query('SELECT * FROM dbo.Assets WHERE Name LIKE @searchTerm');
             const assets = result.recordset;
         
             return { 
