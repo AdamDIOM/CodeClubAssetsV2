@@ -4,7 +4,7 @@ const dbConfig = require('../../dbConfig');
 
 app.http('getAssets', {
     methods: ['GET'],
-    authLevel: 'anonymous',
+    authLevel: 'user',
     handler: async (request, context) => {
         context.log(`getAssets called at "${request.url}"`);
 
