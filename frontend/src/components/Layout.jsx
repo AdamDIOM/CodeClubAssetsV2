@@ -20,7 +20,7 @@ export default function Layout({children}) {
                 </div>
             </header>
 
-            <main className="flex-grow max-w-6xl mx-auto p-4">
+            <main className="grow max-w-6xl mx-auto p-4">
                 {children}
             </main>
 
