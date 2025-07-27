@@ -32,7 +32,7 @@ msalInstance.handleRedirectPromise().then(() => {
 const redirect = sessionStorage.getItem('postLoginRedirect');
 if(redirect) {
   sessionStorage.removeItem('postLoginRedirect');
-  //window.location.replace(redirect);
+  window.location.replace(redirect);
 }
 
 createRoot(document.getElementById('root')).render(

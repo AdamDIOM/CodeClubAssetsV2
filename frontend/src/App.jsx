@@ -1,41 +1,46 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import List from './pages/List';
-import Form from './pages/Form';
-import Loan from './pages/Loan';
+import Form from './pages/Asset-Form';
+import LoanForm from './pages/Loan-Form';
 import Return from './pages/Return';
 import './App.css'
 import Error404 from './pages/404';
-import AuthButtons from './components/AuthButtons';
 import RequireAuth from './components/RequireAuth';
+import Layout from './components/Layout';
+import Loans from './pages/Loans';
 
 
 function App() {
   return (
     <>
-      <AuthButtons />
       <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
 
-            <Route path="/view" element={
-              <RequireAuth><List /></RequireAuth>
-              } />
-            <Route path="/new" element={
-              <RequireAuth><Form /></RequireAuth>
-              } />
-            <Route path="/edit/:id" element={
-              <RequireAuth><Form /></RequireAuth>
-              } />
-            <Route path="/loan" element={
-              <RequireAuth><Loan /></RequireAuth>
-              } />
-            <Route path="/return" element={
-              <RequireAuth><Return /></RequireAuth>
-              } />
-          
-          <Route path="/*" element={<Error404 />} />
-        </Routes>
+              <Route path="/assets" element={
+                <RequireAuth><List /></RequireAuth>
+                } />
+              <Route path="/assets/new" element={
+                <RequireAuth><Form /></RequireAuth>
+                } />
+              <Route path="/assets/:id/edit" element={
+                <RequireAuth><Form /></RequireAuth>
+                } />
+              <Route path="/loans" element={
+                <RequireAuth><Loans /></RequireAuth>
+                } />
+              <Route path="/loans/loan" element={
+                <RequireAuth><LoanForm /></RequireAuth>
+                } />
+              <Route path="/loans/return" element={
+                <RequireAuth><Return /></RequireAuth>
+                } />
+            
+            <Route path="/*" element={<Error404 />} />
+          </Routes>
+        </Layout>
       </Router>
     </>
   )

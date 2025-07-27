@@ -6,16 +6,19 @@ export default function AuthButtons() {
    
 
     const login = () => instance.loginRedirect();
-    const logout = () => instance.logoutRedirect();
+    const logout = () => {
+        sessionStorage.setItem('postLoginRedirect', '/');
+        instance.logoutRedirect();
+    }
 
     return (
         <>
             <AuthenticatedTemplate>
                 <p>Hello, {account?.name}</p>
-                <button onClick={logout}>Sign out</button>
+                <button onClick={logout} className='hover:underline'>Sign out</button>
             </AuthenticatedTemplate>
             <UnauthenticatedTemplate>
-                <button onClick={login}>Sign in with Microsoft</button>
+                <button onClick={login} className='hover:underline'>Sign in with Microsoft</button>
             </UnauthenticatedTemplate>
         </>
     )
