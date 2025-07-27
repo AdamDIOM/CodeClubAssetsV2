@@ -6,7 +6,10 @@ export default function AuthButtons() {
    
 
     const login = () => instance.loginRedirect();
-    const logout = () => instance.logoutRedirect();
+    const logout = () => {
+        sessionStorage.setItem('postLoginRedirect', '/');
+        instance.logoutRedirect();
+    }
 
     return (
         <>

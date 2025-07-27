@@ -10,7 +10,9 @@ export default function RequireAuth({ children, msalReady }) {
 
     useEffect(() => {
         if(!isAuthenticated) {
-            sessionStorage.setItem('postLoginRedirect', window.location.pathname);
+            if(!sessionStorage.getItem('postLoginRedirect')) {
+                sessionStorage.setItem('postLoginRedirect', window.location.pathname);
+            }
             instance.loginRedirect();
         }
     }, [isAuthenticated])
