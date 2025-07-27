@@ -11,7 +11,7 @@ export default function Home() {
     return (
         <Link to={link} onClick={onclick}>
 
-            <div className="p-4 border border-club-orange-300 dark:border-club-green-500 rounded-lg shadow-sm bg-white dark:bg-neutral-800">
+            <div className="p-4 border border-club-orange-300 dark:border-club-green-500 rounded-lg shadow-sm bg-white dark:bg-neutral-800 hover:bg-club-orange-100 hover:dark:bg-club-green-600 active:bg-club-orange-400 dark:active:bg-club-green-800">
                 <h3 className="text-xl font-semibold mb-2">{title}</h3>
                 <p className="text-neutral-700 dark:text-neutral-300">{description}</p>
             </div>

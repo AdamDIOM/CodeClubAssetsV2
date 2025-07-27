@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html{
+  font-family: "Ubuntu", cursive;
+}
+
 @theme {
   --color-club-green-50: #f6faeb;
   --color-club-green-100: #ecf3d4;
