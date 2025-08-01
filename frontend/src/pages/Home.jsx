@@ -21,14 +21,14 @@ export default function Home() {
     
     return (
         <>
-            <section className="text-center mb-12">
+            <section className="text-center mb-12 px-4">
                 <h1 className="text-4xl font-bold mb-4">Code Club Asset Management System</h1>
                 <p className="text-lg max-w-xl mx-auto">
                     The one place to track all your assets, manage loans and returns, and keep your inventory organised!
                 </p>
             </section>
 
-            <section className="mb-12">
+            <section className="mb-12 px-4">
                 <h2 className="text-2xl font-bold mb-6">Features</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-12">
                     <Feature title="Easy Asset Tracking" description="Add, view, edit, and delete assets quickly and efficiently." link="/assets" />
