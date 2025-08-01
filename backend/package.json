@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@azure/functions": "^4.0.0",
+    "@azure/identity": "^4.10.1",
     "mssql": "^11.0.1"
   },
   "devDependencies": {
