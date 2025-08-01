@@ -29,8 +29,8 @@ export default function AssetTable({ assets }) {
     }
   return (
     <div className="overflow-x-auto p-4 w-full">
-      <table className="w-full border border-club-orange-300 dark:border-club-green-500 shadow rounded-2xl overflow-hidden bg-white dark:bg-neutral-800">
-        <thead className="bg-club-orange-400 dark:bg-club-green-800 text-neutral-700 dark:text-neutral-300 text-left text-sm">
+      <table className="top-40 w-full border border-club-orange-300 dark:border-club-green-500 shadow rounded-2xl overflow-hidden bg-white dark:bg-neutral-800">
+        <thead className="sticky top-0 z-9 bg-club-orange-400 dark:bg-club-green-800 text-neutral-700 dark:text-neutral-300 text-left text-sm">
           <tr>
             <th className="px-4 py-2 border-b block table-cell"></th>
             <th className="px-4 py-2 border-b">ID</th>
