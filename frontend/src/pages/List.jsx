@@ -56,6 +56,7 @@ export default function List() {
             setLoading(true)
             return;
         }
+        setLoading(true)
         fetchAssets();
     }, [accounts]);
 
