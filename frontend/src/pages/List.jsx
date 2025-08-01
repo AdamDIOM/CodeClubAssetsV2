@@ -91,10 +91,15 @@ export default function List() {
             {loading ? (
                 <>
                 <div className="flex justify-center items-center h-64">
-                    <p>Loading...</p>
+                    <div className='block text-center'>
+                        <h1 className='text-4xl font-bold mb-4'>Loading...</h1>
+                        <br />
+                        <p>Please note, the database can take up to a minute to turn on from sleep.</p>
+                    </div>
+                    
                 </div>
                 <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-club-green-600"></div>
+                    <div className="animate-spin rounded-full h-50 w-50 border-t-6 border-b-6 border-club-orange-300 dark:border-club-green-500"></div>
                 </div>
                 </>
             ) : (
