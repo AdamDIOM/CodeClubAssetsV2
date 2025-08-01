@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import AuthButtons from "./AuthButtons";
+import { useState } from "react";
+import AuthName from "./AuthName";
 
 export default function Layout({children}) {
+    const [menuOpen, setMenuOpen] = useState(false);
     return (
         <div className="min-h-screen flex flex-col bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white">
             <header className="bg-club-green-300 dark:bg-club-orange-800 text-black dark:text-white p-4 shadow">
@@ -12,17 +15,86 @@ export default function Layout({children}) {
                             <img src="code-club-dark.png" className="hidden dark:inline h-7 w-auto"/>
 
                         </Link>
-                        <nav className="space-x-4">
+                        <nav className="hidden md:flex space-x-4">
                             <Link to="/assets" className="hover:underline">Assets</Link>
                             <Link to="/assets/new" className="hover:underline">New</Link>
                             <Link to="/loans" className="hover:underline">Loans</Link>
                         </nav>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <AuthButtons />
+                        <span><AuthName prefix="Hello, " /></span>
+                        <AuthButtons className="hidden md:block" />
                     </div>
+                    <button
+                        className="md:hidden ml-2 focus:outline-none"
+                        onClick={() => setMenuOpen(true)}
+                        aria-label="Open menu"
+                    >
+                        <svg
+                            className="w-6 h-6"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            viewBox="0 0 24 24"
+                        >
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <line x1="3" y1="12" x2="21" y2="12" />
+                            <line x1="3" y1="18" x2="21" y2="18" />
+                        </svg>
+                    </button>
                 </div>
             </header>
+
+            {/* Offcanvas Sidebar */}
+            <div
+                className={`fixed top-0 left-0 h-full w-64 bg-club-green-300 dark:bg-club-orange-800 text-black dark:text-white p-6 transform transition-transform duration-300 ease-in-out z-50
+                ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}
+            >
+                <button
+                onClick={() => setMenuOpen(false)} 
+                aria-label="Close menu"
+                className="mb-6 text-xl font-bold focus:outline-none"
+                >
+                ✕ Close
+                </button>
+                <nav className="flex flex-col space-y-4 text-lg">
+                <Link
+                    to="/assets"
+                    className="hover:underline"
+                    onClick={() => setMenuOpen(false)}
+                >
+                    Assets
+                </Link>
+                <Link
+                    to="/assets/new"
+                    className="hover:underline"
+                    onClick={() => setMenuOpen(false)}
+                >
+                    New
+                </Link>
+                <Link
+                    to="/loans"
+                    className="hover:underline"
+                    onClick={() => setMenuOpen(false)}
+                >
+                    Loans
+                </Link>
+
+                    <span><AuthName prefix="Signed in as " /></span>
+                    <AuthButtons />
+                </nav>
+            </div>
+
+            {/* Overlay */}
+            {menuOpen && (
+                <div
+                onClick={() => setMenuOpen(false)}
+                className="fixed inset-0 bg-black bg-opacity-50 z-40"
+                aria-hidden="true"
+                />
+            )}
 
             <main className="grow max-w-6xl mx-auto p-4">
                 {children}

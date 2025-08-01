@@ -57,8 +57,8 @@ export default function AssetTable({ assets }) {
                             />
                         </td>
                         <td className="px-4 py-2 border-b whitespace-nowrap">{asset.ID}</td>
-                        <td className="px-4 py-2 border-b truncate sm:table-cell hidden">{asset.Name}</td>
-                        <td className="px-4 py-2 border-b max-w-xs truncate md:table-cell hidden" title={asset.Description}>
+                        <td className="px-4 py-2 border-b w-auto break-words truncate sm:table-cell hidden">{asset.Name}</td>
+                        <td className="px-4 py-2 border-b max-w-xs sm:max-w-[200px] truncate md:table-cell hidden" title={asset.Description}>
                             {asset.Description || '—'}
                         </td>
                         <td className="px-4 py-2 border-b">{asset.Location || '—'}</td>
