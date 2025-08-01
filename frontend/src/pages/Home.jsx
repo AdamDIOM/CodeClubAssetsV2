@@ -28,7 +28,7 @@ export default function Home() {
                 </p>
             </section>
 
-            <section className="mb-12">
+            <section className="mb-12 px-4">
                 <h2 className="text-2xl font-bold mb-6">Features</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-12">
                     <Feature title="Easy Asset Tracking" description="Add, view, edit, and delete assets quickly and efficiently." link="/assets" />
