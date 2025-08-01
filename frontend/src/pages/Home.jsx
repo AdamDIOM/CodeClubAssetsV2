@@ -21,7 +21,7 @@ export default function Home() {
     
     return (
         <>
-            <section className="text-center mb-12">
+            <section className="text-center mb-12 px-4">
                 <h1 className="text-4xl font-bold mb-4">Code Club Asset Management System</h1>
                 <p className="text-lg max-w-xl mx-auto">
                     The one place to track all your assets, manage loans and returns, and keep your inventory organised!
