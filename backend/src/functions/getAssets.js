@@ -48,7 +48,8 @@ app.http('getAssets', {
                     }
                 },
                 options: {
-                    encrypt: true
+                    encrypt: true,
+                    connectTimeout: 70000
                 }
             });
 
