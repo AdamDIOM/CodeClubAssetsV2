@@ -7,7 +7,7 @@ export default function Layout({children}) {
     const [menuOpen, setMenuOpen] = useState(false);
     return (
         <div className="min-h-screen flex flex-col bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white">
-            <header className="bg-club-green-300 dark:bg-club-orange-800 text-black dark:text-white p-4 shadow">
+            <header className="sticky top-0 z-10 bg-club-green-300 dark:bg-club-orange-800 text-black dark:text-white p-4 shadow">
                 <div className="max-w-6xl mx-auto flex justify-between items-center">
                     <div className="flex items-center gap-8">
                         <Link to="/">
@@ -91,7 +91,7 @@ export default function Layout({children}) {
             {menuOpen && (
                 <div
                 onClick={() => setMenuOpen(false)}
-                className="fixed inset-0 bg-black bg-opacity-50 z-40"
+                className="fixed inset-0 bg-black/50 z-40"
                 aria-hidden="true"
                 />
             )}

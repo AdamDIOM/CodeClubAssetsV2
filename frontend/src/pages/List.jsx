@@ -99,7 +99,7 @@ export default function List() {
                 </>
             ) : (
                     <>
-                        <form onSubmit={handleSubmit} className='w-full mb-4 flex gap-2'>
+                        <form onSubmit={handleSubmit} className='sticky top-20 z-11 w-full pb-4 flex gap-2'>
                             <input
                                 type="text"
                                 placeholder="Search..."
