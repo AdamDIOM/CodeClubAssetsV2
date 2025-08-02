@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 html{
-  font-family: "Ubuntu", cursive;
+  font-family: "Ubuntu", sans-serif;
 }
 
 @theme {
