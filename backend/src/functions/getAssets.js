@@ -1,8 +1,6 @@
 const { app } = require('@azure/functions');
 const { OnBehalfOfCredential } = require('@azure/identity');
-const { ConfidentialClientApp } = require('@azure/msal-node');
 const sql = require('mssql');
-const dbConfig = require('../../dbConfig');
 
 async function getSqlAccessToken(userAccessToken) {
     const credential = new OnBehalfOfCredential({
@@ -15,7 +13,6 @@ async function getSqlAccessToken(userAccessToken) {
     const token = await credential.getToken('https://database.windows.net/.default')
     return token.token;
 }
-
 
 app.http('getAssets', {
     methods: ['GET'],
@@ -58,7 +55,6 @@ app.http('getAssets', {
                 .input('searchTerm', sql.NVarChar, `%${searchTerm}%`)
                 .query('SELECT * FROM dbo.Assets WHERE Name LIKE @searchTerm');
             const assets = result.recordset;
-            //context.log(result)
         
             return { 
                 status: 200,
