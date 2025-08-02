@@ -29,7 +29,6 @@ export default function List() {
             const accessToken = tokenResponse.accessToken;
 
             // console.log("token: " + accessToken);
-
             const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/getAssets`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
