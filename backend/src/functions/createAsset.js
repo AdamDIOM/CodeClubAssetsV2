@@ -50,12 +50,14 @@ app.http('createAsset', {
 
             await pool.connect();
             const result = await pool.request()
+                .input('ID', sql.NVarChar, assetData.ID)
                 .input('Name', sql.NVarChar, assetData.Name)
                 .input('Description', sql.NVarChar, assetData.Description)
+                .input('Location', sql.NVarChar, assetData.Location)
                 .input('ParentID', sql.NVarChar, assetData.ParentID)
                 .input('Tags', sql.NVarChar, assetData.Tags)
                 .query(`
-                    INSERT INTO dbo.Assets (Name, Description, ParentID, Tags)
+                    INSERT INTO dbo.Assets (ID, Name, Description, Location, ParentID, Tags)
                     VALUES (@Name, @Description, @ParentID, @Tags)
                 `);
         
