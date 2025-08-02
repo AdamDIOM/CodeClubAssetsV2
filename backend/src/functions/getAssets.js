@@ -21,9 +21,6 @@ app.http('getAssets', {
         context.log(`getAssets called at "${request.url}"`);
 
         const searchTerm = request.query.get('f') || '';
-        context.log(request.query)
-        context.log(searchTerm)
-
         const authHeader = request.headers.get('Authorization')
 
         if(!authHeader.startsWith('Bearer ')) {
