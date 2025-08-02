@@ -14,13 +14,13 @@ async function getSqlAccessToken(userAccessToken) {
     return token.token;
 }
 
-app.http('getAssets', {
-    methods: ['GET'],
-    authLevel: 'anonymous',
-    handler: async (request, context) => {
-        context.log(`getAssets called at "${request.url}"`);
 
-        const searchTerm = request.query.get('f') || '';
+app.http('createAsset', {
+    methods: ['POST'],
+    authLevel: 'user',
+    handler: async (request, context) => {
+        context.log(`createAsset called at "${request.url}"`);
+
         const authHeader = request.headers.get('Authorization')
 
         if(!authHeader.startsWith('Bearer ')) {
@@ -28,6 +28,7 @@ app.http('getAssets', {
         }
 
         const userAccessToken = authHeader.split(' ')[1]
+        const assetData = await request.json()
 
         try {
             const sqlAccessToken = await getSqlAccessToken(userAccessToken);
@@ -49,20 +50,29 @@ app.http('getAssets', {
 
             await pool.connect();
             const result = await pool.request()
-                .input('searchTerm', sql.NVarChar, `%${searchTerm}%`)
-                .query('SELECT * FROM dbo.Assets WHERE Name LIKE @searchTerm');
-            const assets = result.recordset;
+                .input('ID', sql.NVarChar, assetData.ID)
+                .input('Name', sql.NVarChar, assetData.Name)
+                .input('Description', sql.NVarChar, assetData.Description)
+                .input('Location', sql.NVarChar, assetData.Location)
+                .input('SerialNumber', sql.NVarChar, assetData.SerialNumber)
+                .input('ParentID', sql.NVarChar, assetData.ParentID)
+                .input('Tags', sql.NVarChar, assetData.Tags)
+                .input('TestsRequired', sql.Bit, assetData.TestsRequired)
+                .input('Out', sql.Bit, assetData.Out)
+                .query(`
+                    INSERT INTO dbo.Assets (ID, Name, Description, Location, SerialNumber, ParentID, Tags, TestsRequired, Out)
+                    VALUES (@ID, @Name, @Description, @Location, @SerialNumber, @ParentID, @Tags, @TestsRequired, @Out)
+                `);
         
             return { 
-                status: 200,
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(assets)
+                status: 201,
+                body: "Asset created successfully."
             };
         } catch (err) {
             context.error('Database error: ', err);
             return {
                 status: 500,
-                body: "Failed to retrieve assets from database."
+                body: "Failed to create asset."
             }
         }
     }

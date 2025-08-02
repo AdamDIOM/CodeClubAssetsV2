@@ -13,6 +13,7 @@ function InnerDiv({asset}){
         >
             <strong>Name: </strong><p>{asset.Name || '—'}</p>
             <strong>Description: </strong><p>{asset.Description || '—'}</p>
+            <strong>Serial Number: </strong><p>{asset.SerialNumber || '—'}</p>
             <strong>Parent ID: </strong><p>{asset.ParentID || '—'}</p>
             <strong>Tags:</strong><p>{asset.Tags || '—'}</p>
         </motion.div>

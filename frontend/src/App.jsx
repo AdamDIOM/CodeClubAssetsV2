@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import List from './pages/List';
-import Form from './pages/Asset-Form';
+import Form from './pages/CreateAsset';
 import LoanForm from './pages/Loan-Form';
 import Return from './pages/Return';
 import './App.css'
