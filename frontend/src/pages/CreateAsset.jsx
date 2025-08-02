@@ -1,4 +1,4 @@
-export default function Form() {
+export default function Create() {
     return (
         <p>form</p>
     )
