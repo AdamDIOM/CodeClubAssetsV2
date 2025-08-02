@@ -57,9 +57,11 @@ app.http('createAsset', {
                 .input('SerialNumber', sql.NVarChar, assetData.SerialNumber)
                 .input('ParentID', sql.NVarChar, assetData.ParentID)
                 .input('Tags', sql.NVarChar, assetData.Tags)
+                .input('TestsRequired', sql.Bit, assetData.TestsRequired)
+                .input('Out', sql.Bit, assetData.Out)
                 .query(`
-                    INSERT INTO dbo.Assets (ID, Name, Description, Location, SerialNumber, ParentID, Tags)
-                    VALUES (@ID, @Name, @Description, @Location, @SerialNumber, @ParentID, @Tags)
+                    INSERT INTO dbo.Assets (ID, Name, Description, Location, SerialNumber, ParentID, Tags, TestsRequired, Out)
+                    VALUES (@ID, @Name, @Description, @Location, @SerialNumber, @ParentID, @Tags, @TestsRequired, @Out)
                 `);
         
             return { 
