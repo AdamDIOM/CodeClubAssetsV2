@@ -17,7 +17,7 @@ async function getSqlAccessToken(userAccessToken) {
 
 app.http('createAsset', {
     methods: ['POST'],
-    authLevel: 'anonymous',
+    authLevel: 'user',
     handler: async (request, context) => {
         context.log(`createAsset called at "${request.url}"`);
 
