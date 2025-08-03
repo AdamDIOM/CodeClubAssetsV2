@@ -29,7 +29,8 @@ export default function Create() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
+                    'Authorization': `Bearer ${accessToken}`,
+                    'x-functions-key': `${import.meta.env.VITE_CREATE_API_KEY}`
                 },
                 body: JSON.stringify(form)
             });
