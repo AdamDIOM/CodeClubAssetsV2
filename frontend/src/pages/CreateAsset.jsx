@@ -23,6 +23,8 @@ export default function Create() {
             const tokenResponse = await instance.acquireTokenSilent(request);
             const accessToken = tokenResponse.accessToken;
 
+            console.log(accessToken)
+
             const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/createAsset`, {
                 method: 'POST',
                 headers: {
