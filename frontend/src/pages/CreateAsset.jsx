@@ -36,13 +36,17 @@ export default function Create() {
             });
 
             if(!res.ok) {
-                throw new Error(`Failed to create asset: ${res.status}`);
+                throw new Error(res.status);
             }
             setMessage("Asset created successfully!");
             setForm({ ID: '', Name: '', Description: '', Location: '', SerialNumber: '', ParentID: '', Tags: '', TestsRequired: 0, Out: 0 })
         } catch (err) {
-            console.error(err);
-            setMessage("Error creating asset: ", err)
+            if(err.message === "403"){
+                setMessage("You do not have permission to modify the asset database.")
+            }
+            else{
+                setMessage(`${err} whilst trying to create asset`)
+            }
         }
     }
 

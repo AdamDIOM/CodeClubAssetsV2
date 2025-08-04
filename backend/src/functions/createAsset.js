@@ -70,6 +70,13 @@ app.http('createAsset', {
             };
         } catch (err) {
             context.error('Database error: ', err);
+            context.error('Error number: ', err.number)
+            if (err.number === 229 || err.originalError && err.originalError.number === 229) {
+                return {
+                    status: 403,
+                    body: "You do not have permission to perform this action"
+                };
+            }
             return {
                 status: 500,
                 body: "Failed to create asset."
