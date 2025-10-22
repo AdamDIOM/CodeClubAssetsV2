@@ -66,7 +66,7 @@ app.http('createAsset', {
         
             return { 
                 status: 201,
-                body: "Asset created successfully."
+                body: JSON.stringify(`Asset ${assetData.ID} created successfully.`)
             };
         } catch (err) {
             context.error('Database error: ', err);
@@ -74,12 +74,12 @@ app.http('createAsset', {
             if (err.number === 229 || err.originalError && err.originalError.number === 229) {
                 return {
                     status: 403,
-                    body: "You do not have permission to perform this action"
+                    body: JSON.stringify("You do not have permission to perform this action")
                 };
             }
             return {
                 status: 500,
-                body: "Failed to create asset."
+                body: JSON.stringify("Failed to create asset.")
             }
         }
     }
