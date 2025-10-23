@@ -6,7 +6,7 @@ import AuthName from "./AuthName";
 export default function Layout({children}) {
     const [menuOpen, setMenuOpen] = useState(false);
     return (
-        <div className="min-h-screen flex flex-col bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white">
+        <div className="min-h-screen flex flex-col bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white bg-club-orange-100 dark:bg-club-green-950">
             <header className="sticky top-0 z-10 bg-club-green-300 dark:bg-club-orange-800 text-black dark:text-white p-4 shadow">
                 <div className="max-w-6xl mx-auto flex justify-between items-center">
                     <div className="flex items-center gap-8">
