@@ -3,7 +3,7 @@ import { useMsal } from "@azure/msal-react"
 
 function GenericInput(props) {
     return (
-        <input name={props.name} placeholder={props.placeholder} value={props.value} onChange={props.onChange} required={props.required} className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-club-orange-300 focus:dark:ring-club-green-500 bg-white dark:bg-neutral-800 placeholder-gray-400" />
+        <input name={props.name} placeholder={props.placeholder} value={props.value} onChange={props.onChange} required={props.required} className="mx-auto w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-club-orange-300 focus:dark:ring-club-green-500 bg-white dark:bg-neutral-800 placeholder-gray-400" />
     )
 }
 
@@ -80,7 +80,7 @@ export default function Create() {
         <div className="max-w-xl mx-auto">
             {loading ? <p>Loading...</p> : null}
             <h1 className="text-2xl font-bold mb-4">Create New Asset</h1>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:block flex flex-col items-center">
                 <GenericInput name="ID" placeholder="ID" value={form.ID} onChange={handleChange} required />
                 <GenericInput name="Name" placeholder="Name" value={form.Name} onChange={handleChange} required />
                 <GenericInput name="Description" placeholder="Description" value={form.Description} onChange={handleChange} />
@@ -95,6 +95,7 @@ export default function Create() {
                 peer-checked:bg-club-orange-100 peer-checked:dark:bg-club-green-600
                 active:bg-club-orange-400 dark:active:bg-club-green-800
                 px-4 py-2 rounded
+                mx-auto
                 text-neutral-700 dark:text-neutral-300 cursor-pointer
                 ">Create Similar</label>
                 {loading
