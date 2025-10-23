@@ -1,6 +1,12 @@
 import { useState } from "react"
 import { useMsal } from "@azure/msal-react"
 
+function GenericInput(props) {
+    return (
+        <input name={props.name} placeholder={props.placeholder} value={props.value} onChange={props.onChange} required={props.required} className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-club-orange-300 focus:dark:ring-club-green-500 bg-white dark:bg-neutral-800 placeholder-gray-400" />
+    )
+}
+
 export default function Create() {
     const { instance, accounts } = useMsal();
     const [form, setForm] = useState({ ID: '', Name: '', Description: '', Location: '', SerialNumber: '', ParentID: '', Tags: '', TestsRequired: 0, Out: 0 });
@@ -11,7 +17,8 @@ export default function Create() {
     const [clear, setClear] = useState(false);
 
     const handleChange = e => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const {name, value} = e.target;
+        setForm({ ...form, [name]: value });
     };
 
     const handleToggle = e => {
@@ -67,19 +74,21 @@ export default function Create() {
         }
     }
 
+    
+
     return (
         <div className="max-w-xl mx-auto">
-            {loading ? <p>Loading...</p> : <></>}
+            {loading ? <p>Loading...</p> : null}
             <h1 className="text-2xl font-bold mb-4">Create New Asset</h1>
             <form onSubmit={handleSubmit} className="space-y-4">
-                <input name="ID" placeholder="ID" value={form.ID} onChange={handleChange} required className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-club-orange-300 focus:dark:ring-club-green-500 bg-white dark:bg-neutral-800 placeholder-gray-400" />
-                <input name="Name" placeholder="Name" value={form.Name} onChange={handleChange} required className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-club-orange-300 focus:dark:ring-club-green-500 bg-white dark:bg-neutral-800 placeholder-gray-400" />
-                <input name="Description" placeholder="Description" value={form.Description} onChange={handleChange} className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-club-orange-300 focus:dark:ring-club-green-500 bg-white dark:bg-neutral-800 placeholder-gray-400" />
-                <input name="Location" placeholder="Location" value={form.Location} onChange={handleChange} className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-club-orange-300 focus:dark:ring-club-green-500 bg-white dark:bg-neutral-800 placeholder-gray-400" />
-                <input name="SerialNumber" placeholder="Serial Number" value={form.SerialNumber} onChange={handleChange} className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-club-orange-300 focus:dark:ring-club-green-500 bg-white dark:bg-neutral-800 placeholder-gray-400" />
-                <input name="ParentID" placeholder="Parent ID" value={form.ParentID} onChange={handleChange} className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-club-orange-300 focus:dark:ring-club-green-500 bg-white dark:bg-neutral-800 placeholder-gray-400" />
-                <input name="Tags" placeholder="Tags (separated by ;)" value={form.Tags} onChange={handleChange} className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-club-orange-300 focus:dark:ring-club-green-500 bg-white dark:bg-neutral-800 placeholder-gray-400" />
-                <input name="Clear" id="clearCheckbox" type="checkbox" class="hidden peer" value={form.Clear} onChange={handleToggle} />
+                <GenericInput name="ID" placeholder="ID" value={form.ID} onChange={handleChange} required />
+                <GenericInput name="Name" placeholder="Name" value={form.Name} onChange={handleChange} required />
+                <GenericInput name="Description" placeholder="Description" value={form.Description} onChange={handleChange} />
+                <GenericInput name="Location" placeholder="Location" value={form.Location} onChange={handleChange} />
+                <GenericInput name="SerialNumber" placeholder="Serial Number" value={form.SerialNumber} onChange={handleChange} />
+                <GenericInput name="ParentID" placeholder="Parent ID" value={form.ParentID} onChange={handleChange} />
+                <GenericInput name="Tags" placeholder="Tags (separated by ;)" value={form.Tags} onChange={handleChange} />
+                <input name="Clear" id="clearCheckbox" type="checkbox" className="hidden peer" value={form.Clear} onChange={handleToggle} />
                 <label for="clearCheckbox" className="inline-block w-full p-2 border rounded 
                 peer-checked:ring-2 ring-club-orange-300 dark:ring-club-green-500
                 dark:bg-neutral-800
