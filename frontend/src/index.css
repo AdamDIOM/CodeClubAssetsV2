@@ -29,6 +29,23 @@ html{
   --color-club-orange-900: #6f3118;
   --color-club-orange-950: #3f1809;
 
+  @keyframes slide-up {
+    0% {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
 
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+  --animate-slide-up: slide-up 0.3s ease-out both;
+  --animate-fade-out: fade-out 0.4s ease-in forwards;
 
 }
