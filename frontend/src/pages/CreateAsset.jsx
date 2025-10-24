@@ -100,7 +100,7 @@ export default function Create() {
                 <GenericInput name="ParentID" placeholder="Parent ID" value={form.ParentID} onChange={handleChange} />
                 <GenericInput name="Tags" placeholder="Tags (separated by ;)" value={form.Tags} onChange={handleChange} />
                 <input name="Clear" id="clearCheckbox" type="checkbox" className="hidden peer" value={form.Clear} onChange={handleToggle} />
-                <label for="clearCheckbox" className="inline-block w-full p-2 border rounded 
+                <label htmlFor="clearCheckbox" className="inline-block w-full p-2 border rounded 
                 peer-checked:ring-2 ring-club-orange-300 dark:ring-club-green-500
                 dark:bg-neutral-800
                 peer-checked:bg-club-orange-100 peer-checked:dark:bg-club-green-600
