@@ -59,7 +59,8 @@ export default function Create() {
             setLoading(false)
 
             if(!res.ok) {
-                throw new Error(res.status);
+                const errorBody = await res.json(); // or res.json() if your backend returns JSON
+                throw { status: res.status, body: errorBody };
             }
             var reply = await res.json()
 
@@ -76,11 +77,12 @@ export default function Create() {
                 setForm({ ...form, ID: '', SerialNumber: ''})
             }
         } catch (err) {
-            if(err.message === "403"){
+            console.log(err)
+            if(err.status === "403"){
                 setMessage("You do not have permission to modify the asset database.")
             }
             else{
-                setMessage(`${err} whilst trying to create asset`)
+                setMessage(`Error ${err.status}: ${err.body}`)
             }
         }
     }

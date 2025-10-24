@@ -77,6 +77,30 @@ app.http('createAsset', {
                     body: JSON.stringify("You do not have permission to perform this action")
                 };
             }
+            if (err.number === 2627 || err.originalError && err.originalError.number === 2627){
+                return {
+                status: 409,
+                body: JSON.stringify(`Asset ID '${assetData.ID}' already exists.`)
+                }
+            }
+            if (err.number === 2628 || err.originalError && err.originalError.number === 2628){
+                return {
+                status: 400,
+                body: JSON.stringify(err.message)
+                }
+            }
+            if (err.number === 8114 || err.originalError && err.originalError.number === 8114){
+                return {
+                status: 400,
+                body: JSON.stringify("Input type mismatch.")
+                }
+            }
+            if (err.number === 18456 || err.originalError && err.originalError.number === 18456){
+                return {
+                status: 401,
+                body: JSON.stringify("You do not have permission to write to the database.")
+                }
+            }
             return {
                 status: 500,
                 body: JSON.stringify("Failed to create asset.")
