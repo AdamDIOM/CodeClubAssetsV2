@@ -10,7 +10,7 @@ function GenericInput(props) {
 
 export default function Create() {
     const { instance, accounts } = useMsal();
-    const [form, setForm] = useState({ ID: '', Name: '', Description: '', Location: '', SerialNumber: '', ParentID: '', Tags: '', TestsRequired: 0, Out: 0 });
+    const [form, setForm] = useState({ ID: '', Name: '', Description: null, Location: null, SerialNumber: null, ParentID: null, Tags: null, TestsRequired: 0 });
     const [message, setMessage] = useState(null);
 
     const [toast, setToast] = useState(null)
@@ -72,7 +72,7 @@ export default function Create() {
             }
 
             if(!clear){
-                setForm({ ID: '', Name: '', Description: '', Location: '', SerialNumber: '', ParentID: '', Tags: '', TestsRequired: 0, Out: 0 })
+                setForm({ ID: '', Name: '', Description: null, Location: null, SerialNumber: null, ParentID: null, Tags: null, TestsRequired: 0 })
             } else {
                 setForm({ ...form, ID: '', SerialNumber: ''})
             }

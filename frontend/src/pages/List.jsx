@@ -39,7 +39,8 @@ export default function List() {
                 //console.log("error!");
                 throw new Error(`HTTP error! status: ${res.status}`);
             }
-            const data = await res.json();
+            var data = await res.json();
+            data = data.filter(asset => asset.Deleted == 0)
             setAssets(data);
         } catch (err) {
             console.error("Error fetching assets: ", err);
