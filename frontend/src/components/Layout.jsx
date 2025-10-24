@@ -11,8 +11,8 @@ export default function Layout({children}) {
                 <div className="max-w-6xl mx-auto flex justify-between items-center">
                     <div className="flex items-center gap-8">
                         <Link to="/">
-                            <img src="code-club-light.png" className="inline dark:hidden h-7 w-auto" />
-                            <img src="code-club-dark.png" className="hidden dark:inline h-7 w-auto"/>
+                            <img src="/code-club-light.png" className="inline dark:hidden h-7 w-auto" />
+                            <img src="/code-club-dark.png" className="hidden dark:inline h-7 w-auto"/>
 
                         </Link>
                         <nav className="hidden md:flex space-x-4">

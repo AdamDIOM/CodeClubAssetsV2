@@ -59,7 +59,8 @@ export default function Create() {
             setLoading(false)
 
             if(!res.ok) {
-                throw new Error(res.status);
+                const errorBody = await res.json(); // or res.json() if your backend returns JSON
+                throw { status: res.status, body: errorBody };
             }
             var reply = await res.json()
 
@@ -76,11 +77,12 @@ export default function Create() {
                 setForm({ ...form, ID: '', SerialNumber: ''})
             }
         } catch (err) {
-            if(err.message === "403"){
+            console.log(err)
+            if(err.status === "403"){
                 setMessage("You do not have permission to modify the asset database.")
             }
             else{
-                setMessage(`${err} whilst trying to create asset`)
+                setMessage(`Error ${err.status}: ${err.body}`)
             }
         }
     }
@@ -100,7 +102,7 @@ export default function Create() {
                 <GenericInput name="ParentID" placeholder="Parent ID" value={form.ParentID} onChange={handleChange} />
                 <GenericInput name="Tags" placeholder="Tags (separated by ;)" value={form.Tags} onChange={handleChange} />
                 <input name="Clear" id="clearCheckbox" type="checkbox" className="hidden peer" value={form.Clear} onChange={handleToggle} />
-                <label for="clearCheckbox" className="inline-block w-full p-2 border rounded 
+                <label htmlFor="clearCheckbox" className="inline-block w-full p-2 border rounded 
                 peer-checked:ring-2 ring-club-orange-300 dark:ring-club-green-500
                 dark:bg-neutral-800
                 peer-checked:bg-club-orange-100 peer-checked:dark:bg-club-green-600
