@@ -1,6 +1,8 @@
 const { app } = require('@azure/functions');
 const { OnBehalfOfCredential } = require('@azure/identity');
 const sql = require('mssql');
+const jwt = require('jsonwebtoken');
+
 
 async function getSqlAccessToken(userAccessToken) {
     const credential = new OnBehalfOfCredential({
@@ -22,13 +24,15 @@ app.http('createAsset', {
         context.log(`createAsset called at "${request.url}"`);
 
         const authHeader = request.headers.get('Authorization')
-
         if(!authHeader.startsWith('Bearer ')) {
             return {status:401, body: "Missing or invalid Authorization header"}
         }
-
+        
         const userAccessToken = authHeader.split(' ')[1]
         const assetData = await request.json()
+
+        const decoded = jwt.decode(userAccessToken);
+        const user = (decoded?.name || decoded?.preferred_username)
 
         try {
             const sqlAccessToken = await getSqlAccessToken(userAccessToken);
@@ -58,11 +62,14 @@ app.http('createAsset', {
                 .input('ParentID', sql.NVarChar, assetData.ParentID)
                 .input('Tags', sql.NVarChar, assetData.Tags)
                 .input('TestsRequired', sql.Bit, assetData.TestsRequired)
+                .input('User', sql.NVarChar, user)
                 .query(`
                     INSERT INTO dbo.Assets (ID, Name, Description, Location, SerialNumber, ParentID, Tags, TestsRequired)
-                    VALUES (@ID, @Name, @Description, @Location, @SerialNumber, @ParentID, @Tags, @TestsRequired)
+                    VALUES (@ID, @Name, @Description, @Location, @SerialNumber, @ParentID, @Tags, @TestsRequired);
+
+                    INSERT INTO dbo.Logs (AssetID, UserID, Operation)
+                    VALUES (@ID, @User, 'CREATE');
                 `);
-        
             return { 
                 status: 201,
                 body: JSON.stringify(`Asset ${assetData.ID} created successfully.`)
