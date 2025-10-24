@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useMsal } from "@azure/msal-react"
+import Toast from "../components/Toast";
 
 function GenericInput(props) {
     return (
@@ -11,6 +12,9 @@ export default function Create() {
     const { instance, accounts } = useMsal();
     const [form, setForm] = useState({ ID: '', Name: '', Description: '', Location: '', SerialNumber: '', ParentID: '', Tags: '', TestsRequired: 0, Out: 0 });
     const [message, setMessage] = useState(null);
+
+    const [toast, setToast] = useState(null)
+    const [closeToast, setCloseToast] = useState(false)
 
     const [loading, setLoading] = useState(false);
 
@@ -58,7 +62,14 @@ export default function Create() {
                 throw new Error(res.status);
             }
             var reply = await res.json()
-            setMessage(reply);
+
+            if(toast){
+                setCloseToast(true);
+                const timer = setTimeout(() => {setToast(reply)}, 400);
+            } else {
+                setToast(reply)
+            }
+
             if(!clear){
                 setForm({ ID: '', Name: '', Description: '', Location: '', SerialNumber: '', ParentID: '', Tags: '', TestsRequired: 0, Out: 0 })
             } else {
@@ -77,10 +88,10 @@ export default function Create() {
     
 
     return (
-        <div className="max-w-xl mx-auto">
-            {loading ? <p>Loading...</p> : null}
+        <div className="sm:max-w-xl max-w-4/5 mx-auto ">
+            
             <h1 className="text-2xl font-bold mb-4">Create New Asset</h1>
-            <form onSubmit={handleSubmit} className="space-y-4 sm:block flex flex-col items-center">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:block  ">
                 <GenericInput name="ID" placeholder="ID" value={form.ID} onChange={handleChange} required />
                 <GenericInput name="Name" placeholder="Name" value={form.Name} onChange={handleChange} required />
                 <GenericInput name="Description" placeholder="Description" value={form.Description} onChange={handleChange} />
@@ -99,14 +110,29 @@ export default function Create() {
                 text-neutral-700 dark:text-neutral-300 cursor-pointer
                 ">Create Similar</label>
                 {loading
-                ? 
-                <button type="submit" disabled className="w-full bg-white ring-2 ring-club-orange-300 dark:ring-club-green-500 dark:bg-neutral-800 hover:bg-club-orange-100 hover:dark:bg-club-green-600 active:bg-club-orange-400 dark:active:bg-club-green-800 px-4 py-2 rounded text-neutral-700 dark:text-neutral-300 cursor-wait">Creating...</button>
+                ? (
+                    <>
+                    <button type="submit" disabled className="w-full bg-white ring-2 ring-club-orange-300 dark:ring-club-green-500 dark:bg-neutral-800 hover:bg-club-orange-100 hover:dark:bg-club-green-600 active:bg-club-orange-400 dark:active:bg-club-green-800 px-4 py-2 rounded text-neutral-700 dark:text-neutral-300 cursor-wait">Creating...</button>
+
+                    <div className="flex justify-center items-center h-20">
+                        <div className="animate-spin rounded-full h-16 w-16 border-t-6 border-b-6 border-club-orange-300 dark:border-club-green-500"></div>
+                    </div>
+                    <div className="flex justify-center items-center">
+                        <div className='block text-center'>
+                            <p>Please note, the database can take up to a minute to turn on from sleep.</p>
+                        </div>
+                        
+                    </div>
+                    
+                    </>
+                )
                 :
                 <button type="submit" className="w-full bg-white ring-2 ring-club-orange-300 dark:ring-club-green-500 dark:bg-neutral-800 hover:bg-club-orange-100 hover:dark:bg-club-green-600 active:bg-club-orange-400 dark:active:bg-club-green-800 px-4 py-2 rounded text-neutral-700 dark:text-neutral-300 cursor-pointer ">Submit</button>
                 }
-                
             </form>
             {message && <p className="mt-4">{message}</p>}
+            {toast && <Toast message={toast} onClose={() => {setToast(null); setCloseToast(false)}} close={closeToast} />
+            }
         </div>
     )
 }
