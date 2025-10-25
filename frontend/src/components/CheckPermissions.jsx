@@ -1,5 +1,3 @@
-import { useMsal } from "@azure/msal-react";
-
 export const checkPermissions = async (accessToken) => {
     const permRes = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/checkPermissions`, {
         headers: {
