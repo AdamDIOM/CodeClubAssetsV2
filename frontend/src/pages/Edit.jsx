@@ -34,6 +34,7 @@ export default function Edit() {
 
     const [editPerms, setEditPerms] = useState(false)
     const [viewPerms, setViewPerms] = useState(false)
+    const [deletePerms, setDeletePerms] = useState(false)
 
     const [downloading, setDownloading] = useState(false);
     const [uploading, setUploading] = useState(false)
@@ -141,6 +142,7 @@ export default function Edit() {
             const x = await checkPermissions(accessToken);
             if(x.includes('db_datawriter')) {
                 setEditPerms(true)
+                setDeletePerms(true)
             }
             form.Deleted = 0;
         } catch (err) {
@@ -168,6 +170,7 @@ export default function Edit() {
                 const x = await checkPermissions(accessToken);
                 if(x.includes('db_datawriter')) {
                     setEditPerms(true)
+                    setDeletePerms(true)
                 } else {
                     setMessage("You do not have permission to edit the asset database.")
                 }
@@ -210,10 +213,10 @@ export default function Edit() {
 
     useEffect(() => {
             if(accounts.length === 0 ) {
-                //setDownloading(true)
+                setDownloading(true)
                 return;
             }
-            //setDownloading(true)
+            setDownloading(true)
             fetchAsset();
         }, [accounts]);
 
@@ -327,10 +330,10 @@ export default function Edit() {
 
                 {message && <p className="mt-4 text-red-600">{message}</p>}
             </form>
-            {form.Deleted == 0 ? 
+            {deletePerms && (form.Deleted == 0 ? 
             <button className="w-full bg-white ring-2 ring-red-500 dark:bg-neutral-800 hover:bg-red-500 hover:ring-red-300 hover:dark:bg-red-700 active:bg-red-300 active:ring-red-500 active:dark:bg-red-900 active:dark:ring-red-500 px-4 py-2 mt-8 rounded text-neutral-700 dark:text-neutral-300 cursor-pointer font-semibold" onClick={handleDelete}>Delete</button>
             :
-            <button className="w-full bg-white ring-2 ring-club-orange-300 dark:ring-club-green-500 dark:bg-neutral-800 hover:bg-club-orange-100 hover:dark:bg-club-green-600 active:bg-club-orange-400 dark:active:bg-club-green-800 px-4 py-2 rounded text-neutral-700 dark:text-neutral-300 cursor-pointer font-semibold mt-8" onClick={handleUnDelete}>Un-Delete</button>}
+            <button className="w-full bg-white ring-2 ring-club-orange-300 dark:ring-club-green-500 dark:bg-neutral-800 hover:bg-club-orange-100 hover:dark:bg-club-green-600 active:bg-club-orange-400 dark:active:bg-club-green-800 px-4 py-2 rounded text-neutral-700 dark:text-neutral-300 cursor-pointer font-semibold mt-8" onClick={handleUnDelete}>Un-Delete</button>)}
             </>
             ):
             
