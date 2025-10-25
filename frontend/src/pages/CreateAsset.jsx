@@ -132,7 +132,7 @@ export default function Create() {
                 <button type="submit" className="w-full bg-white ring-2 ring-club-orange-300 dark:ring-club-green-500 dark:bg-neutral-800 hover:bg-club-orange-100 hover:dark:bg-club-green-600 active:bg-club-orange-400 dark:active:bg-club-green-800 px-4 py-2 rounded text-neutral-700 dark:text-neutral-300 cursor-pointer ">Submit</button>
                 }
             </form>
-            {message && <p className="mt-4">{message}</p>}
+            {message && <p className="mt-4 text-red-600">{message}</p>}
             {toast && <Toast message={toast} onClose={() => {setToast(null); setCloseToast(false)}} close={closeToast} />
             }
         </div>

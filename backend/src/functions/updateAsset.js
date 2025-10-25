@@ -3,6 +3,18 @@ const { OnBehalfOfCredential } = require('@azure/identity');
 const sql = require('mssql');
 const jwt = require('jsonwebtoken');
 
+function identifyChanges(data, originalData) {
+    changes = []
+    if(data.Name != originalData.Name) changes.push({"Name" : originalData.Name})
+    if(data.Description != originalData.Description) changes.push({"Description" : originalData.Description})
+    if(data.Location != originalData.Location) changes.push({"Location" : originalData.Location})
+    if(data.SerialNumber != originalData.SerialNumber) changes.push({"SerialNumber" : originalData.SerialNumber})
+    if(data.ParentID != originalData.ParentID) changes.push({"ParentID" : originalData.ParentID})
+    if(data.Tags != originalData.Tags) changes.push({"Tags" : originalData.Tags})
+
+
+    return {"From" : changes};
+}
 
 async function getSqlAccessToken(userAccessToken) {
     const credential = new OnBehalfOfCredential({
@@ -17,11 +29,11 @@ async function getSqlAccessToken(userAccessToken) {
 }
 
 
-app.http('createAsset', {
-    methods: ['POST'],
+app.http('updateAsset', {
+    methods: ['PUT'],
     authLevel: 'user',
     handler: async (request, context) => {
-        context.log(`createAsset called at "${request.url}"`);
+        context.log(`updateAsset called at "${request.url}"`);
 
         const authHeader = request.headers.get('Authorization')
         if(!authHeader.startsWith('Bearer ')) {
@@ -29,7 +41,17 @@ app.http('createAsset', {
         }
         
         const userAccessToken = authHeader.split(' ')[1]
-        const assetData = await request.json()
+        const bothData = await request.json()
+        const assetData = bothData[0];
+        const originalData = bothData[1];
+        const changedRaw = identifyChanges(assetData, originalData)
+        if(changedRaw.From.length == 0) {
+            return { 
+                status: 200,
+                body: JSON.stringify(`No data changed.`)
+            };
+        }
+        const changes = JSON.stringify(changedRaw);
 
         const decoded = jwt.decode(userAccessToken);
         const user = (decoded?.name || decoded?.preferred_username)
@@ -63,20 +85,29 @@ app.http('createAsset', {
                 .input('Tags', sql.NVarChar, assetData.Tags)
                 .input('TestsRequired', sql.Bit, assetData.TestsRequired)
                 .query(`
-                    INSERT INTO dbo.Assets (ID, Name, Description, Location, SerialNumber, ParentID, Tags, TestsRequired)
-                    VALUES (@ID, @Name, @Description, @Location, @SerialNumber, @ParentID, @Tags, @TestsRequired);                    
+                    UPDATE dbo.Assets
+                    SET
+                    Name = @Name,
+                    Description = @Description,
+                    Location = @Location,
+                    SerialNumber = @SerialNumber,
+                    ParentID = @ParentID,
+                    Tags = @Tags,
+                    TestsRequired = @TestsRequired
+                    WHERE ID = @ID;
                 `);
 
-            const result2 = await pool.request()
+                const result2 = await pool.request()
                 .input('ID', sql.NVarChar, assetData.ID)
                 .input('User', sql.NVarChar, user)
+                .input('Notes', sql.NVarChar, changes)
                 .query(`
-                    INSERT INTO dbo.Logs (AssetID, UserID, Operation)
-                    VALUES (@ID, @User, 'CREATE');
+                    INSERT INTO dbo.Logs (AssetID, UserID, Operation, Note)
+                    VALUES (@ID, @User, 'UPDATE', @Notes);
                     `);
             return { 
-                status: 201,
-                body: JSON.stringify(`Asset ${assetData.ID} created successfully.`)
+                status: 200,
+                body: JSON.stringify(`Asset ${assetData.ID} updated successfully.`)
             };
         } catch (err) {
             context.error('Database error: ', err);
@@ -92,12 +123,6 @@ app.http('createAsset', {
                     status: 403,
                     body: JSON.stringify("You do not have permission to perform this action")
                 };
-            }
-            if (err.number === 2627 || err.originalError && err.originalError.number === 2627){
-                return {
-                status: 409,
-                body: JSON.stringify(`Asset ID '${assetData.ID}' already exists.`)
-                }
             }
             if (err.number === 2628 || err.originalError && err.originalError.number === 2628){
                 return {
@@ -119,7 +144,7 @@ app.http('createAsset', {
             }
             return {
                 status: 500,
-                body: JSON.stringify("Failed to create asset.")
+                body: JSON.stringify("Failed to update asset.")
             }
         }
     }
