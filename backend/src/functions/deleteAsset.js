@@ -87,7 +87,7 @@ app.http('deleteAsset', {
                     body: JSON.stringify("Login failed. Do you have permission to be using this system?")
                 }
             }
-            if (err.number === 229 || err.originalError && err.originalError.number === 229) {
+            if (err.code === "EREQUEST" || err.originalError && err.originalError === "EREQUEST" || err.number === 229 || err.originalError && err.originalError.number === 229) {
                 return {
                     status: 403,
                     body: JSON.stringify("You do not have permission to perform this action")
