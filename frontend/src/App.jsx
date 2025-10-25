@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import List from './pages/List';
 import Form from './pages/CreateAsset';
+import Edit from './pages/Edit';
 import LoanForm from './pages/Loan-Form';
 import Return from './pages/Return';
 import './App.css'
@@ -26,7 +27,7 @@ function App() {
                 <RequireAuth><Form /></RequireAuth>
                 } />
               <Route path="/assets/:id/edit" element={
-                <RequireAuth><Form /></RequireAuth>
+                <RequireAuth><Edit /></RequireAuth>
                 } />
               <Route path="/loans" element={
                 <RequireAuth><Loans /></RequireAuth>

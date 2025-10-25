@@ -3,7 +3,6 @@ const { OnBehalfOfCredential } = require('@azure/identity');
 const sql = require('mssql');
 const jwt = require('jsonwebtoken');
 
-
 async function getSqlAccessToken(userAccessToken) {
     const credential = new OnBehalfOfCredential({
         tenantId: '5eb26f0a-532d-45f6-b1b4-58c84e52a7c5',
@@ -17,11 +16,13 @@ async function getSqlAccessToken(userAccessToken) {
 }
 
 
-app.http('createAsset', {
-    methods: ['POST'],
+app.http('deleteAsset', {
+    route: 'deleteAsset/{id}',
+    methods: ['DELETE'],
     authLevel: 'user',
     handler: async (request, context) => {
-        context.log(`createAsset called at "${request.url}"`);
+        const id = request.params.id;
+        context.log(`deleteAsset called at "${request.url}"`);
 
         const authHeader = request.headers.get('Authorization')
         if(!authHeader.startsWith('Bearer ')) {
@@ -29,10 +30,14 @@ app.http('createAsset', {
         }
         
         const userAccessToken = authHeader.split(' ')[1]
-        const assetData = await request.json()
 
         const decoded = jwt.decode(userAccessToken);
         const user = (decoded?.name || decoded?.preferred_username)
+
+
+        if(!id) {
+            return {status: 400, body: JSON.stringify("Missing asset id")}
+        }
 
         try {
             const sqlAccessToken = await getSqlAccessToken(userAccessToken);
@@ -54,29 +59,24 @@ app.http('createAsset', {
 
             await pool.connect();
             const result = await pool.request()
-                .input('ID', sql.NVarChar, assetData.ID)
-                .input('Name', sql.NVarChar, assetData.Name)
-                .input('Description', sql.NVarChar, assetData.Description)
-                .input('Location', sql.NVarChar, assetData.Location)
-                .input('SerialNumber', sql.NVarChar, assetData.SerialNumber)
-                .input('ParentID', sql.NVarChar, assetData.ParentID)
-                .input('Tags', sql.NVarChar, assetData.Tags)
-                .input('TestsRequired', sql.Bit, assetData.TestsRequired)
+                .input('ID', sql.NVarChar, id)
                 .query(`
-                    INSERT INTO dbo.Assets (ID, Name, Description, Location, SerialNumber, ParentID, Tags, TestsRequired)
-                    VALUES (@ID, @Name, @Description, @Location, @SerialNumber, @ParentID, @Tags, @TestsRequired);                    
+                    UPDATE dbo.Assets
+                    SET
+                    Deleted = 1
+                    WHERE ID = @ID;
                 `);
 
-            const result2 = await pool.request()
-                .input('ID', sql.NVarChar, assetData.ID)
+                const result2 = await pool.request()
+                .input('ID', sql.NVarChar, id)
                 .input('User', sql.NVarChar, user)
                 .query(`
                     INSERT INTO dbo.Logs (AssetID, UserID, Operation)
-                    VALUES (@ID, @User, 'CREATE');
+                    VALUES (@ID, @User, 'DELETE');
                     `);
             return { 
-                status: 201,
-                body: JSON.stringify(`Asset ${assetData.ID} created successfully.`)
+                status: 200,
+                body: JSON.stringify(`Asset ${id} deleted successfully.`)
             };
         } catch (err) {
             context.error('Database error: ', err);
@@ -92,12 +92,6 @@ app.http('createAsset', {
                     status: 403,
                     body: JSON.stringify("You do not have permission to perform this action")
                 };
-            }
-            if (err.number === 2627 || err.originalError && err.originalError.number === 2627){
-                return {
-                status: 409,
-                body: JSON.stringify(`Asset ID '${assetData.ID}' already exists.`)
-                }
             }
             if (err.number === 2628 || err.originalError && err.originalError.number === 2628){
                 return {
@@ -119,7 +113,7 @@ app.http('createAsset', {
             }
             return {
                 status: 500,
-                body: JSON.stringify("Failed to create asset.")
+                body: JSON.stringify("Failed to delete asset.")
             }
         }
     }

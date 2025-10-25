@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
 import { FiChevronDown } from 'react-icons/fi'
+import { Link } from "react-router-dom";
 
 function InnerDiv({asset}){
     return (
@@ -20,7 +21,7 @@ function InnerDiv({asset}){
     )
 }
 
-export default function AssetTable({ assets }) {
+export default function AssetTable({ assets, edit }) {
     const [expandedRows, setExpandedRows] = useState([]);
 
     const toggleRow = (id) => {
@@ -39,6 +40,7 @@ export default function AssetTable({ assets }) {
             <th className="px-4 py-2 border-b md:table-cell hidden">Description</th>
             <th className="px-4 py-2 border-b">Location</th>
             <th className="px-4 py-2 border-b lg:table-cell hidden">Parent</th>
+            {edit && <th className="px-4 py-2 border-b sm:table-cell hidden"></th>}
           </tr>
         </thead>
         <tbody className="text-sm text-gray-800">
@@ -64,6 +66,9 @@ export default function AssetTable({ assets }) {
                         </td>
                         <td className="px-4 py-2 border-b">{asset.Location || '—'}</td>
                         <td className="px-4 py-2 border-b lg:table-cell hidden">{asset.ParentID || '—'}</td>
+                        {edit && <td className="px-4 py-2 border-b w-auto break-words truncate sm:table-cell hidden">
+                            <Link to={`${asset.ID}/edit`}>Edit</Link>
+                            </td>}
                         </tr>
                         {/* Expandable Row (small screens only) */}
                         <AnimatePresence initial={false}>

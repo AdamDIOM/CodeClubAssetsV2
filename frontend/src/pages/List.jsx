@@ -2,6 +2,7 @@ import { useMsal } from '@azure/msal-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import AssetTable from '../components/AssetTable';
+import { checkPermissions } from '../components/CheckPermissions';
 
 
 export default function List() {
@@ -16,6 +17,8 @@ export default function List() {
 
     const [loading, setLoading] = useState(false);
 
+    const [editPerms, setEditPerms] = useState(false)
+
     const fetchAssets = async() => {
         if (!accounts.length) return;
         //console.log(accounts.length)
@@ -28,6 +31,10 @@ export default function List() {
             const tokenResponse = await instance.acquireTokenSilent(request);
             const accessToken = tokenResponse.accessToken;
 
+            const x = await checkPermissions(accessToken);
+            console.log("x ", x)
+            if(x.includes('db_datawriter')) setEditPerms(true)
+            
             // console.log("token: " + accessToken);
             const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/getAssets`, {
                 headers: {
@@ -37,14 +44,21 @@ export default function List() {
 
             if(!res.ok) {
                 //console.log("error!");
-                throw new Error(`HTTP error! status: ${res.status}`);
+                const errorBody = await res.json(); 
+            
+                throw { status: res.status, body: errorBody };
             }
             var data = await res.json();
             data = data.filter(asset => asset.Deleted == 0)
             setAssets(data);
         } catch (err) {
             console.error("Error fetching assets: ", err);
-            setError(err.message || "Failed to fetch assets.");
+            if(err.status === 401){
+                setError("You do not have permission to view the asset database.")
+            }
+            else{
+                setError(`Error ${err.status}: ${err.body}`)
+            }
         }finally {
 
             setLoading(false);
@@ -115,9 +129,9 @@ export default function List() {
                         </form>
                         {error && <p className='text-red-600'>{error}</p>}
                         {filteredAssets.length ? (
-                            <AssetTable assets={filteredAssets}/>   
+                            <AssetTable assets={filteredAssets} edit={editPerms}/>   
                         ) : (
-                            <p>No assets found.</p>
+                            !error && <p>No assets found.</p>
                         )}
                         
                   </>

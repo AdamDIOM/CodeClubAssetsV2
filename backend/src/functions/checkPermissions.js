@@ -1,6 +1,7 @@
 const { app } = require('@azure/functions');
 const { OnBehalfOfCredential } = require('@azure/identity');
 const sql = require('mssql');
+const jwt = require('jsonwebtoken');
 
 async function getSqlAccessToken(userAccessToken) {
     const credential = new OnBehalfOfCredential({
@@ -14,20 +15,22 @@ async function getSqlAccessToken(userAccessToken) {
     return token.token;
 }
 
-app.http('getAssets', {
+
+app.http('checkPermissions', {
     methods: ['GET'],
     authLevel: 'user',
     handler: async (request, context) => {
-        context.log(`getAssets called at "${request.url}"`);
+        context.log(`checkPermissions called at "${request.url}"`);
 
-        const searchTerm = request.query.get('f') || '';
         const authHeader = request.headers.get('Authorization')
-        const specificID = request.headers.get('ID') || null;
-
         if(!authHeader.startsWith('Bearer ')) {
             return {status:401, body: "Missing or invalid Authorization header"}
         }
+        
         const userAccessToken = authHeader.split(' ')[1]
+
+        const decoded = jwt.decode(userAccessToken);
+        const user = (decoded?.preferred_username)
 
         try {
             const sqlAccessToken = await getSqlAccessToken(userAccessToken);
@@ -48,28 +51,25 @@ app.http('getAssets', {
             });
 
             await pool.connect();
-            var result;
-            
-                console.log(specificID)
-            if(specificID) {
-                result = await pool.request()
-                    .input('searchTerm', sql.NVarChar, `${specificID}`)
-                    .query('SELECT * FROM dbo.Assets WHERE ID = @searchTerm');
-            }
-            else{
-                result = await pool.request()
-                    .input('searchTerm', sql.NVarChar, `%${searchTerm}%`)
-                    .query('SELECT * FROM dbo.Assets WHERE Name LIKE @searchTerm');
-            }
-            const assets = result.recordset;
-        
+            console.log(decoded.preferred_username)
+            const result = await pool.request()
+                .input('Email', sql.NVarChar, decoded.preferred_username)
+                .query(`
+                    SELECT dp1.name AS DatabaseRoleName
+                    FROM sys.database_role_members AS drm
+                    JOIN sys.database_principals AS dp1 ON drm.role_principal_id = dp1.principal_id
+                    JOIN sys.database_principals AS dp2 ON drm.member_principal_id = dp2.principal_id
+                    WHERE dp2.name = @Email;
+                `);
+            const roles = result.recordset.map(r => r.DatabaseRoleName);
+            //console.log(roles)
             return { 
-                status: 200,
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(assets)
+                status: 201,
+                body: JSON.stringify(roles)
             };
         } catch (err) {
             context.error('Database error: ', err);
+            context.error('Error number: ', err.number)
             if(err.code === "ELOGIN" || err.originalError && err.originalError === "ELOGIN") {
                 return {
                     status: 401,
@@ -78,7 +78,7 @@ app.http('getAssets', {
             }
             return {
                 status: 500,
-                body: "Failed to retrieve assets from database."
+                body: JSON.stringify("Failed to check permissions.")
             }
         }
     }
