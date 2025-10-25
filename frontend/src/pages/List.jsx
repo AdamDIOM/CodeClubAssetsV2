@@ -32,7 +32,6 @@ export default function List() {
             const accessToken = tokenResponse.accessToken;
 
             const x = await checkPermissions(accessToken);
-            console.log("x ", x)
             if(x.includes('db_datawriter')) setEditPerms(true)
             
             // console.log("token: " + accessToken);

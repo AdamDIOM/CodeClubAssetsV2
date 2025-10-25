@@ -76,6 +76,12 @@ app.http('getAssets', {
                     body: JSON.stringify("Login failed. Do you have permission to be here?")
                 }
             }
+            if(err.code === "EREQUEST" || err.originalError && err.originalError === "EREQUEST") {
+                return {
+                    status: 403,
+                    body: JSON.stringify("You do not have permission to read from the database")
+                }
+            }
             return {
                 status: 500,
                 body: "Failed to retrieve assets from database."
