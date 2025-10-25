@@ -24,7 +24,7 @@ app.http('checkPermissions', {
 
         const authHeader = request.headers.get('Authorization')
         if(!authHeader.startsWith('Bearer ')) {
-            return {status:401, body: "Missing or invalid Authorization header"}
+            return {status:401, body: JSON.stringify("Missing or invalid Authorization header")}
         }
         
         const userAccessToken = authHeader.split(' ')[1]
