@@ -21,7 +21,6 @@ export default function List() {
 
     const fetchAssets = async() => {
         if (!accounts.length) return;
-        //console.log(accounts.length)
         const request = {
             scopes: [import.meta.env.VITE_BACKEND_API_SCOPE],
             account: accounts[0]
@@ -34,7 +33,6 @@ export default function List() {
             const x = await checkPermissions(accessToken);
             if(x.includes('db_datawriter')) setEditPerms(true)
             
-            // console.log("token: " + accessToken);
             const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/getAssets`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
@@ -42,7 +40,6 @@ export default function List() {
             });
 
             if(!res.ok) {
-                //console.log("error!");
                 const errorBody = await res.json(); 
             
                 throw { status: res.status, body: errorBody };
@@ -59,7 +56,6 @@ export default function List() {
                 setError(`Error ${err.status}: ${err.body}`)
             }
         }finally {
-
             setLoading(false);
         };
     };

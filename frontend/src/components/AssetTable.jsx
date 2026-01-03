@@ -37,7 +37,7 @@ export default function AssetTable({ assets, edit }) {
             <th className="px-4 py-2 border-b block table-cell"></th>
             <th className="px-4 py-2 border-b">ID</th>
             <th className="px-4 py-2 border-b sm:table-cell hidden">Name</th>
-            <th className="px-4 py-2 border-b md:table-cell hidden">Description</th>
+            <th className={`px-4 py-2 border-b ${edit ? "lg:table-cell" : "md:table-cell"} hidden`}>Description</th>
             <th className="px-4 py-2 border-b">Location</th>
             <th className="px-4 py-2 border-b lg:table-cell hidden">Parent</th>
             {edit && <th className="px-4 py-2 border-b sm:table-cell hidden"></th>}
@@ -61,7 +61,7 @@ export default function AssetTable({ assets, edit }) {
                         </td>
                         <td className="px-4 py-2 border-b whitespace-nowrap">{asset.ID}</td>
                         <td className="px-4 py-2 border-b w-auto break-words truncate sm:table-cell hidden">{asset.Name}</td>
-                        <td className="px-4 py-2 border-b max-w-xs sm:max-w-[200px] truncate md:table-cell hidden" title={asset.Description}>
+                        <td className={`px-4 py-2 border-b max-w-xs sm:max-w-[200px] truncate ${edit ? "lg:table-cell" : "md:table-cell"} hidden`} title={asset.Description}>
                             {asset.Description || '—'}
                         </td>
                         <td className="px-4 py-2 border-b">{asset.Location || '—'}</td>
