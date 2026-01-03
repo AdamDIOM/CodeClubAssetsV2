@@ -34,7 +34,8 @@ export default function Loans() {
 
             const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/getLoans`, {
                 headers: {
-                    Authorization: `Bearer ${accessToken}`
+                    Authorization: `Bearer ${accessToken}`,
+                    'x-functions-key': `${import.meta.env.VITE_CREATE_API_KEY}`
                 }
             });
 
