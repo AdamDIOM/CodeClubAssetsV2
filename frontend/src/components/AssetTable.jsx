@@ -80,7 +80,7 @@ export default function AssetTable({ assets, edit }) {
                                     <div className="mb-1"><strong>Description:</strong> {asset.Description || '—'}</div>
                                     <div><strong>Parent ID:</strong> {asset.ParentID || '—'}</div>
                                 </td> */}
-                                <td colSpan={6} className="px-4 py-2 bg-club-orange-50 dark:bg-club-green-900 border-b text-neutral-700 dark:text-neutral-300">
+                                <td colSpan={7} className="px-4 py-2 bg-club-orange-50 dark:bg-club-green-900 border-b text-neutral-700 dark:text-neutral-300">
                                     <InnerDiv asset={asset}/>
                                 </td>
                             </tr>
