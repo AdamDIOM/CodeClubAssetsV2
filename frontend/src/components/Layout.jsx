@@ -7,7 +7,7 @@ export default function Layout({children}) {
     const [menuOpen, setMenuOpen] = useState(false);
     return (
         <div className="min-h-screen flex flex-col bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white bg-club-orange-100 dark:bg-club-green-950">
-            <header className="sticky top-0 z-10 bg-club-green-300 dark:bg-club-orange-800 text-black dark:text-white p-4 shadow">
+            <header className="sticky top-0 z-40 bg-club-green-300 dark:bg-club-orange-800 text-black dark:text-white p-4 shadow">
                 <div className="max-w-6xl mx-auto flex justify-between items-center">
                     <div className="flex items-center gap-8">
                         <Link to="/">
@@ -16,9 +16,24 @@ export default function Layout({children}) {
 
                         </Link>
                         <nav className="hidden md:flex space-x-4">
-                            <Link to="/assets" className="hover:underline">Assets</Link>
-                            <Link to="/assets/new" className="hover:underline">New</Link>
-                            <Link to="/loans" className="hover:underline">Loans</Link>
+                            {/* Assets Dropdown */}
+                            <div className="relative group">
+                                <Link to="/assets" className="hover:underline">Assets</Link>
+
+                                <div className="absolute left-0 pt-2 hidden w-40 rounded-md bg-club-green-300 dark:bg-club-orange-800 text-black dark:text-white shadow-lg group-hover:block">
+                                <Link to="/assets/new" className="block px-4 py-2 text-sm hover:underline">New</Link>
+                                </div>
+                            </div>
+
+                            {/* Loans Dropdown */}
+                            <div className="relative group">
+                                <Link to="/loans" className="hover:underline">Loans</Link>
+
+                                <div className="absolute left-0 top-full pt-2 hidden w-40 rounded-md bg-club-green-300 dark:bg-club-orange-800 text-black dark:text-white shadow-lg group-hover:block z-50">
+                                <Link to="/loans/new" className="block px-4 py-2 text-sm hover:underline">New</Link>
+                                <Link to="/loans/return" className="block px-4 py-2 text-sm hover:underline">Return</Link>
+                                </div>
+                            </div>
                         </nav>
                     </div>
                     <div className="flex items-center space-x-2">
