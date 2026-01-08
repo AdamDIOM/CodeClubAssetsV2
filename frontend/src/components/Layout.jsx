@@ -15,12 +15,23 @@ export default function Layout({children}) {
                             <img src="/code-club-dark.png" className="hidden dark:inline h-7 w-auto"/>
 
                         </Link>
-                        <nav className="hidden md:flex space-x-4">
+                        <nav className="relative hidden md:flex space-x-4">
                             {/* Assets Dropdown */}
                             <div className="relative group">
-                                <Link to="/assets" className="hover:underline">Assets</Link>
-
-                                <div className="absolute left-0 pt-2 hidden w-40 rounded-md bg-club-green-300 dark:bg-club-orange-800 text-black dark:text-white shadow-lg group-hover:block">
+                                <Link to="/assets" className="hover:underline">Assets
+                                </Link>
+                                
+                                <span className="inline-block text-xs transform transition-transform group-hover:-translate-y-0.5 duration-500 group-hover:rotate-180 pl-1 pr-1">▼</span>
+                                <div className="
+                                    pointer-events-none absolute left-0 top-full z-50 w-44 pt-2
+                                    opacity-0 translate-y-1
+                                    transition-all duration-200 ease-out
+                                    group-hover:pointer-events-auto
+                                    group-hover:opacity-100
+                                    group-hover:translate-y-0
+                                    rounded-md bg-club-green-300 dark:bg-club-orange-800
+                                    text-black dark:text-white shadow-lg
+                                    ">
                                 <Link to="/assets/new" className="block px-4 py-2 text-sm hover:underline">New</Link>
                                 </div>
                             </div>
@@ -29,7 +40,17 @@ export default function Layout({children}) {
                             <div className="relative group">
                                 <Link to="/loans" className="hover:underline">Loans</Link>
 
-                                <div className="absolute left-0 top-full pt-2 hidden w-40 rounded-md bg-club-green-300 dark:bg-club-orange-800 text-black dark:text-white shadow-lg group-hover:block z-50">
+                                <span className="inline-block text-xs transform transition-transform group-hover:-translate-y-0.5 duration-500 group-hover:rotate-180 pl-1 pr-1">▼</span>
+                                <div className="
+                                    pointer-events-none absolute left-0 top-full z-50 w-44 pt-2
+                                    opacity-0 translate-y-1
+                                    transition-all duration-200 ease-out
+                                    group-hover:pointer-events-auto
+                                    group-hover:opacity-100
+                                    group-hover:translate-y-0
+                                    rounded-md bg-club-green-300 dark:bg-club-orange-800
+                                    text-black dark:text-white shadow-lg
+                                    ">
                                 <Link to="/loans/new" className="block px-4 py-2 text-sm hover:underline">New</Link>
                                 <Link to="/loans/return" className="block px-4 py-2 text-sm hover:underline">Return</Link>
                                 </div>
