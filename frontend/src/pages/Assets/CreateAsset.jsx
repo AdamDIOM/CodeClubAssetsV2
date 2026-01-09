@@ -4,13 +4,18 @@ import Toast from "../../components/Toast";
 
 function GenericInput(props) {
     return (
-        <input name={props.name} placeholder={props.placeholder} value={props.value} onChange={props.onChange} required={props.required} className="mx-auto w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-club-orange-300 focus:dark:ring-club-green-500 bg-white dark:bg-neutral-800 placeholder-gray-400" />
+        <>
+            <input name={props.name} id={props.name} placeholder={props.placeholder} value={props.value} onChange={props.onChange} required={props.required} className="mx-auto w-full p-2 mb-0 mt-4 border rounded focus:outline-none focus:ring-2 focus:ring-club-orange-300 focus:dark:ring-club-green-500 bg-white dark:bg-neutral-800 placeholder-gray-400" />
+            {props.label && (
+                <label htmlFor={props.name} className="text-xs text-gray-400 mb-4 p-2 block">{props.label}</label>
+            )}
+        </>
     )
 }
 
 export default function Create() {
     const { instance, accounts } = useMsal();
-    const [form, setForm] = useState({ ID: '', Name: '', Description: null, Location: null, SerialNumber: null, ParentID: null, Tags: null, TestsRequired: 0 });
+    const [form, setForm] = useState({ ID: '', Name: '', Description: null, Location: null, SerialNumber: null, ParentID: null, Tags: null, TestsRequired: 0, DefaultUseLength: null });
     const [message, setMessage] = useState(null);
 
     const [toast, setToast] = useState(null)
@@ -101,6 +106,7 @@ export default function Create() {
                 <GenericInput name="SerialNumber" placeholder="Serial Number" value={form.SerialNumber} onChange={handleChange} />
                 <GenericInput name="ParentID" placeholder="Parent ID" value={form.ParentID} onChange={handleChange} />
                 <GenericInput name="Tags" placeholder="Tags (separated by ;)" value={form.Tags} onChange={handleChange} />
+                <GenericInput name="DefaultUseLength" placeholder="Default Use Length" value={form.DefaultUseLength} onChange={handleChange} label="This is how long (in days) an asset can be reserved for an individual in the case that it has exclusive use" />
                 <input name="Clear" id="clearCheckbox" type="checkbox" className="hidden peer" value={form.Clear} onChange={handleToggle} />
                 <label htmlFor="clearCheckbox" className="inline-block w-full p-2 border rounded 
                 peer-checked:ring-2 ring-club-orange-300 dark:ring-club-green-500

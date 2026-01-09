@@ -11,6 +11,7 @@ function identifyChanges(data, originalData) {
     if(data.SerialNumber != originalData.SerialNumber) changes.push({"SerialNumber" : originalData.SerialNumber})
     if(data.ParentID != originalData.ParentID) changes.push({"ParentID" : originalData.ParentID})
     if(data.Tags != originalData.Tags) changes.push({"Tags" : originalData.Tags})
+    if(data.DefaultUseLength != originalData.DefaultUseLength) changes.push({"DefaultUseLength" : originalData.DefaultUseLength})
 
 
     return {"From" : changes};
@@ -84,6 +85,7 @@ app.http('updateAsset', {
                 .input('ParentID', sql.NVarChar, assetData.ParentID)
                 .input('Tags', sql.NVarChar, assetData.Tags)
                 .input('TestsRequired', sql.Bit, assetData.TestsRequired)
+                .input('DefaultUseLength', sql.Int, assetData.DefaultUseLength)
                 .query(`
                     UPDATE assets.Assets
                     SET
@@ -93,7 +95,8 @@ app.http('updateAsset', {
                     SerialNumber = @SerialNumber,
                     ParentID = @ParentID,
                     Tags = @Tags,
-                    TestsRequired = @TestsRequired
+                    TestsRequired = @TestsRequired,
+                    DefaultUseLength = @DefaultUseLength
                     WHERE ID = @ID;
                 `);
 

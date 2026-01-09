@@ -62,9 +62,10 @@ app.http('createAsset', {
                 .input('ParentID', sql.NVarChar, assetData.ParentID)
                 .input('Tags', sql.NVarChar, assetData.Tags)
                 .input('TestsRequired', sql.Bit, assetData.TestsRequired)
+                .input('DefaultUseLength', sql.Int, assetData.DefaultUseLength)
                 .query(`
-                    INSERT INTO assets.Assets (ID, Name, Description, Location, SerialNumber, ParentID, Tags, TestsRequired)
-                    VALUES (@ID, @Name, @Description, @Location, @SerialNumber, @ParentID, @Tags, @TestsRequired);                    
+                    INSERT INTO assets.Assets (ID, Name, Description, Location, SerialNumber, ParentID, Tags, TestsRequired, DefaultUseLength)
+                    VALUES (@ID, @Name, @Description, @Location, @SerialNumber, @ParentID, @Tags, @TestsRequired, @DefaultUseLength);
                 `);
 
             const result2 = await pool.request()

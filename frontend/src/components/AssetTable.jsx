@@ -17,6 +17,7 @@ function InnerDiv({asset}){
             <strong>Serial Number: </strong><p>{asset.SerialNumber || '—'}</p>
             <strong>Parent ID: </strong><p>{asset.ParentID || '—'}</p>
             <strong>Tags:</strong><p>{asset.Tags || '—'}</p>
+            <strong>Default Use Length:</strong><p>{asset.DefaultUseLength && `${asset.DefaultUseLength} days` || '—'}</p>
         </motion.div>
     )
 }

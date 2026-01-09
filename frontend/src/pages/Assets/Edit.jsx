@@ -12,7 +12,12 @@ function GenericInput(props) {
     const editPerms = useEditPerms();
     if(!editPerms) disabled = true
     return (
-        <input name={props.name} placeholder={props.placeholder} value={props.value} onChange={props.onChange} required={props.required} disabled={disabled} className="mx-auto w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-club-orange-300 focus:dark:ring-club-green-500 bg-white dark:bg-neutral-800 disabled:bg-gray-100 dark:disabled:bg-neutral-700 disabled:text-gray-700 dark:disabled:text-gray-200 placeholder-gray-400 disabled:border-gray-400 disabled:cursor-not-allowed disabled:opacity-70" />
+        <>
+            <input name={props.name} id={props.name} placeholder={props.placeholder} value={props.value} onChange={props.onChange} required={props.required} disabled={disabled} className="mx-auto w-full p-2 mb-0 mt-4 border rounded focus:outline-none focus:ring-2 focus:ring-club-orange-300 focus:dark:ring-club-green-500 bg-white dark:bg-neutral-800 disabled:bg-gray-100 dark:disabled:bg-neutral-700 disabled:text-gray-700 dark:disabled:text-gray-200 placeholder-gray-400 disabled:border-gray-400 disabled:cursor-not-allowed disabled:opacity-70" />
+            {props.label && (
+                <label htmlFor={props.name} className="text-xs text-gray-400 mb-4 p-2 block">{props.label}</label>
+            )}
+        </>
     )
 }
 
@@ -23,9 +28,9 @@ export default function Edit() {
     const { id } = useParams()
 
     const { instance, accounts } = useMsal();
-    const [form, setForm] = useState({ ID: '', Name: '', Description: null, Location: null, SerialNumber: null, ParentID: null, Tags: null, TestsRequired: 0 });
+    const [form, setForm] = useState({ ID: '', Name: '', Description: null, Location: null, SerialNumber: null, ParentID: null, Tags: null, TestsRequired: 0, DefaultUseLength: 0 });
 
-    const [originalData, setOriginalData] = useState({ ID: '', Name: '', Description: null, Location: null, SerialNumber: null, ParentID: null, Tags: null, TestsRequired: 0 })
+    const [originalData, setOriginalData] = useState({ ID: '', Name: '', Description: null, Location: null, SerialNumber: null, ParentID: null, Tags: null, TestsRequired: 0, DefaultUseLength: 0 });
 
     const [message, setMessage] = useState(null);
 
@@ -302,6 +307,7 @@ export default function Edit() {
                 <GenericInput name="SerialNumber" placeholder="Serial Number" value={form.SerialNumber} onChange={handleChange} />
                 <GenericInput name="ParentID" placeholder="Parent ID" value={form.ParentID} onChange={handleChange} />
                 <GenericInput name="Tags" placeholder="Tags (separated by ;)" value={form.Tags} onChange={handleChange} />
+                <GenericInput name="DefaultUseLength" placeholder="Default Use Length" value={form.DefaultUseLength} onChange={handleChange} label="This is how long (in days) an asset can be reserved for an individual in the case that it has exclusive use" />
                 {uploading
                 ? (
                     <>
