@@ -85,7 +85,7 @@ app.http('updateAsset', {
                 .input('Tags', sql.NVarChar, assetData.Tags)
                 .input('TestsRequired', sql.Bit, assetData.TestsRequired)
                 .query(`
-                    UPDATE dbo.Assets
+                    UPDATE assets.Assets
                     SET
                     Name = @Name,
                     Description = @Description,
@@ -102,7 +102,7 @@ app.http('updateAsset', {
                 .input('User', sql.NVarChar, user)
                 .input('Notes', sql.NVarChar, changes)
                 .query(`
-                    INSERT INTO dbo.Logs (AssetID, UserID, Operation, Note)
+                    INSERT INTO assets.Logs (AssetID, UserID, Operation, Note)
                     VALUES (@ID, @User, 'UPDATE', @Notes);
                     `);
             return { 

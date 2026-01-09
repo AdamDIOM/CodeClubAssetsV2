@@ -54,19 +54,19 @@ app.http('getLoans', {
             if(specificID) {
                 result = await pool.request()
                     .input('searchTerm', sql.NVarChar, `${specificID}`)
-                    .query('SELECT * FROM dbo.Loans WHERE ID = @searchTerm');
+                    .query('SELECT * FROM assets.Loans WHERE ID = @searchTerm');
             }
             else{
                 result = await pool.request()
                     .input('searchTerm', sql.NVarChar, `%${searchTerm}%`)
                     .query(`SELECT
                         Loans.ID, AssetID, Assets.Name AssetName, Members.Name MemberName, DateBorrowed, LengthBorrowed
-                        FROM Loans
-                        INNER JOIN Assets ON Loans.AssetID = Assets.ID
+                        FROM assets.Loans Loans
+                        INNER JOIN assets.Assets Assets ON Loans.AssetID = Assets.ID
                         INNER JOIN membership.Members on Loans.MemberID = membership.Members.ID`);// WHERE Name LIKE @searchTerm`);
             }
             const loans = result.recordset;
-            console.log(loans)
+            //console.log(loans)
             return {
                 status: 200,
                 headers: {'Content-Type': 'application/json'},

@@ -61,7 +61,7 @@ app.http('deleteAsset', {
             const result = await pool.request()
                 .input('ID', sql.NVarChar, id)
                 .query(`
-                    UPDATE dbo.Assets
+                    UPDATE assets.Assets
                     SET
                     Deleted = 1
                     WHERE ID = @ID;
@@ -71,7 +71,7 @@ app.http('deleteAsset', {
                 .input('ID', sql.NVarChar, id)
                 .input('User', sql.NVarChar, user)
                 .query(`
-                    INSERT INTO dbo.Logs (AssetID, UserID, Operation)
+                    INSERT INTO assets.Logs (AssetID, UserID, Operation)
                     VALUES (@ID, @User, 'DELETE');
                     `);
             return { 
