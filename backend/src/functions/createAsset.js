@@ -63,7 +63,7 @@ app.http('createAsset', {
                 .input('Tags', sql.NVarChar, assetData.Tags)
                 .input('TestsRequired', sql.Bit, assetData.TestsRequired)
                 .query(`
-                    INSERT INTO dbo.Assets (ID, Name, Description, Location, SerialNumber, ParentID, Tags, TestsRequired)
+                    INSERT INTO assets.Assets (ID, Name, Description, Location, SerialNumber, ParentID, Tags, TestsRequired)
                     VALUES (@ID, @Name, @Description, @Location, @SerialNumber, @ParentID, @Tags, @TestsRequired);                    
                 `);
 
@@ -71,7 +71,7 @@ app.http('createAsset', {
                 .input('ID', sql.NVarChar, assetData.ID)
                 .input('User', sql.NVarChar, user)
                 .query(`
-                    INSERT INTO dbo.Logs (AssetID, UserID, Operation)
+                    INSERT INTO assets.Logs (AssetID, UserID, Operation)
                     VALUES (@ID, @User, 'CREATE');
                     `);
             return { 

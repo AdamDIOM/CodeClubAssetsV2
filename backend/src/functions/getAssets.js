@@ -54,12 +54,12 @@ app.http('getAssets', {
             if(specificID) {
                 result = await pool.request()
                     .input('searchTerm', sql.NVarChar, `${specificID}`)
-                    .query('SELECT * FROM dbo.Assets WHERE ID = @searchTerm');
+                    .query('SELECT * FROM assets.Assets WHERE ID = @searchTerm');
             }
             else{
                 result = await pool.request()
                     .input('searchTerm', sql.NVarChar, `%${searchTerm}%`)
-                    .query('SELECT * FROM dbo.Assets WHERE Name LIKE @searchTerm');
+                    .query('SELECT * FROM assets.Assets WHERE Name LIKE @searchTerm');
             }
             const assets = result.recordset;
         
