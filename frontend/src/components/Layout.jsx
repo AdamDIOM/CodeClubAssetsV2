@@ -5,6 +5,16 @@ import AuthName from "./AuthName";
 
 export default function Layout({children}) {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [openDropdown, setOpenDropdown] = useState(null);
+
+    const toggleDropdown = (name) => {
+        setOpenDropdown(openDropdown === name ? null : name);
+    };
+
+    const closeMenu = () => {
+        setMenuOpen(false);
+        setOpenDropdown(null);
+    };
     return (
         <div className="min-h-screen flex flex-col bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white bg-club-orange-100 dark:bg-club-green-950">
             <header className="sticky top-0 z-40 bg-club-green-300 dark:bg-club-orange-800 text-black dark:text-white p-4 shadow">
@@ -21,7 +31,13 @@ export default function Layout({children}) {
                                 <Link to="/assets" className="hover:underline">Assets
                                 </Link>
                                 
-                                <span className="inline-block text-xs transform transition-transform group-hover:-translate-y-0.5 duration-500 group-hover:rotate-180 pl-1 pr-1">▼</span>
+                                <span className="inline-block text-xs transform transition-transform translate-y-0.5 duration-500 group-hover:rotate-180 pl-1 pr-1">
+                                    <svg className={`w-4 h-4`}
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </span>
+                                
                                 <div className="
                                     pointer-events-none absolute left-0 top-full z-50 w-44 pt-2
                                     opacity-0 translate-y-1
@@ -40,7 +56,12 @@ export default function Layout({children}) {
                             <div className="relative group">
                                 <Link to="/loans" className="hover:underline">Loans</Link>
 
-                                <span className="inline-block text-xs transform transition-transform group-hover:-translate-y-0.5 duration-500 group-hover:rotate-180 pl-1 pr-1">▼</span>
+                                <span className="inline-block text-xs transform transition-transform translate-y-0.5 duration-500 group-hover:rotate-180 pl-1 pr-1">
+                                    <svg className={`w-4 h-4`}
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </span>
                                 <div className="
                                     pointer-events-none absolute left-0 top-full z-50 w-44 pt-2
                                     opacity-0 translate-y-1
@@ -89,35 +110,52 @@ export default function Layout({children}) {
                 ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}
             >
                 <button
-                onClick={() => setMenuOpen(false)} 
+                onClick={() => closeMenu()} 
                 aria-label="Close menu"
                 className="mb-6 text-xl font-bold focus:outline-none"
                 >
                 ✕ Close
                 </button>
                 <nav className="flex flex-col space-y-4 text-lg">
-                <Link
-                    to="/assets"
-                    className="hover:underline"
-                    onClick={() => setMenuOpen(false)}
-                >
-                    Assets
-                </Link>
-                <Link
-                    to="/assets/new"
-                    className="hover:underline"
-                    onClick={() => setMenuOpen(false)}
-                >
-                    New
-                </Link>
-                <Link
-                    to="/loans"
-                    className="hover:underline"
-                    onClick={() => setMenuOpen(false)}
-                >
-                    Loans
-                </Link>
+                
+                    {/* Assets */}
+                    <div>
+                        <button className="flex justify-between w-full items-center px-2 py-2 hover:bg-club-orange-700 rounded" onClick={() => toggleDropdown("assets")}>Assets
+                            <svg className={`w-4 h-4 transition-transform duration-200 ${openDropdown === 'assets' ? 'rotate-180' : 'rotate-0'}`}
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
 
+                        {/* Dropdown items */}
+                        {openDropdown === "assets" && (
+                        <div className="flex flex-col pl-4 mt-2 space-y-1">
+                            <Link to="/assets" className="block px-2 py-1 hover:bg-club-orange-600 rounded" onClick={() => {closeMenu()}}>List</Link>
+                            <Link to="/assets/new" className="block px-2 py-1 hover:bg-club-orange-600 rounded" onClick={() => closeMenu()}>New</Link>
+                        </div>
+                        )}
+                    </div>
+
+                    {/* Loans */}
+                    <div>
+                        <button
+                        className="flex justify-between w-full items-center px-2 py-2 hover:bg-club-orange-700 rounded" onClick={() => toggleDropdown("loans")}>
+                            Loans
+                            <svg className={`w-4 h-4 transition-transform duration-200 ${openDropdown === 'loans' ? 'rotate-180' : 'rotate-0'}`}
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+
+                        {/* Dropdown items */}
+                        {openDropdown === "loans" && (
+                        <div className="flex flex-col pl-4 mt-2 space-y-1">
+                            <Link to="/loans" className="block px-2 py-1 hover:bg-club-orange-600 rounded" onClick={() => closeMenu()}>List</Link>
+                            <Link to="/loans/new" className="block px-2 py-1 hover:bg-club-orange-600 rounded" onClick={() => closeMenu()}>New</Link>
+                            <Link to="/loans/return" className="block px-2 py-1 hover:bg-club-orange-600 rounded" onClick={() => closeMenu()}>Return</Link>
+                        </div>
+                        )}
+                    </div>
                     <span><AuthName prefix="Signed in as " /></span>
                     <AuthButtons />
                 </nav>
