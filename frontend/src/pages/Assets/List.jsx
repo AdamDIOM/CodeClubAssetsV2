@@ -1,8 +1,8 @@
 import { useMsal } from '@azure/msal-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import AssetTable from '../components/AssetTable';
-import { checkPermissions } from '../components/CheckPermissions';
+import AssetTable from '../../components/AssetTable';
+import { checkPermissions } from '../../components/CheckPermissions';
 
 
 export default function List() {
