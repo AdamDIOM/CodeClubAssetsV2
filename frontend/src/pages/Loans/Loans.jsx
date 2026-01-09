@@ -1,8 +1,8 @@
 import { useMsal } from '@azure/msal-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import LoansTable from '../components/LoansTable';
-import { checkPermissions } from '../components/CheckPermissions';
+import LoansTable from '../../components/LoansTable';
+import { checkPermissions } from '../../components/CheckPermissions';
 
 
 export default function Loans() {

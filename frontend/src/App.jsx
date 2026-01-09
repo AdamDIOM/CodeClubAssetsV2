@@ -1,15 +1,15 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import List from './pages/List';
-import Form from './pages/CreateAsset';
-import Edit from './pages/Edit';
-import LoanForm from './pages/Loan-Form';
-import Return from './pages/Return';
+import List from './pages/Assets/List';
+import Form from './pages/Assets/CreateAsset';
+import Edit from './pages/Assets/Edit';
+import LoanForm from './pages/Loans/Loan-Form';
+import Return from './pages/Loans/Return';
 import './App.css'
 import Error404 from './pages/404';
 import RequireAuth from './components/RequireAuth';
 import Layout from './components/Layout';
-import Loans from './pages/Loans';
+import Loans from './pages/Loans/Loans';
 
 
 function App() {

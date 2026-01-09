@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useMsal } from "@azure/msal-react"
-import Toast from "../components/Toast";
+import Toast from "../../components/Toast";
 
 function GenericInput(props) {
     return (

@@ -1,8 +1,8 @@
 import { useMsal } from "@azure/msal-react";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { checkPermissions } from "../components/CheckPermissions";
-import Toast from "../components/Toast";
+import { checkPermissions } from "../../components/CheckPermissions";
+import Toast from "../../components/Toast";
 
 const EditPermsContext = createContext(true);
 export const useEditPerms = () => useContext(EditPermsContext);
