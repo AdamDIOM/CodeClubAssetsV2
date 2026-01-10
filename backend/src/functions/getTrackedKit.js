@@ -14,16 +14,16 @@ async function getSqlAccessToken(userAccessToken) {
     return token.token;
 }
 
-app.http('getAssets', {
+app.http('getTrackedKit', {
     methods: ['GET'],
-    authLevel: 'anonymous',
+    authLevel: 'user',
     handler: async (request, context) => {
-        context.log(`getAssets called at "${request.url}"`);
+        context.log(`getTrackedKit called at "${request.url}"`);
 
         const searchTerm = request.query.get('f') || '';
         const authHeader = request.headers.get('Authorization')
         const specificID = request.headers.get('ID') || null;
-        const filter = request.headers.get('Filter') || null;
+        const assetID = request.headers.get('AssetID') || null;
 
         if(!authHeader.startsWith('Bearer ')) {
             return {status:401, body: JSON.stringify("Missing or invalid Authorization header")}
@@ -51,28 +51,39 @@ app.http('getAssets', {
             await pool.connect();
             var result;
             
-                //console.log(specificID)
-                //console.log(specificColumn)
+                console.log(specificID)
             if(specificID) {
                 result = await pool.request()
                     .input('searchTerm', sql.NVarChar, `${specificID}`)
-                    .query('SELECT * FROM assets.Assets WHERE ID = @searchTerm');
+                    .query(`SELECT KT.ID, AssetID, Assets.Name AS AssetName, STRING_AGG(Members.Name, ', ') AS Members, FirstUsed, LastUsed, LengthKept, History, DateReturned
+                        FROM [assets].[KitTracking] KT
+                        INNER JOIN [assets].[Assets] Assets ON KT.AssetID = Assets.ID
+                        INNER JOIN [assets].[KitTrackingPeople] KTP ON KT.ID = KTP.KTID
+                        INNER JOIN [membership].[Members] Members ON KTP.MemberID = Members.ID WHERE KT.ID = @searchTerm
+                        GROUP BY KT.ID, AssetID, Assets.Name,  FirstUsed, LastUsed, LengthKept, History, DateReturned`);
             }
-            else if(filter == "KT") {
+            else if(assetID) {
                 result = await pool.request()
-                    .query('SELECT ID, Name, DefaultUseLength FROM assets.Assets');
+                    .input('searchTerm', sql.NVarChar, `${assetID}`)
+                    .query(`SELECT ID FROM [assets].[KitTracking] WHERE History = 0 AND AssetID = @searchTerm`);
             }
             else{
                 result = await pool.request()
                     .input('searchTerm', sql.NVarChar, `%${searchTerm}%`)
-                    .query('SELECT * FROM assets.Assets WHERE Name LIKE @searchTerm');
+                    .query(`SELECT KT.ID, AssetID, Assets.Name AS AssetName, STRING_AGG(Members.Name, ', ') AS Members, FirstUsed, LastUsed, LengthKept
+                        FROM [assets].[KitTracking] KT
+                        INNER JOIN [assets].[Assets] Assets ON KT.AssetID = Assets.ID
+                        INNER JOIN [assets].[KitTrackingPeople] KTP ON KT.ID = KTP.KTID
+                        INNER JOIN [membership].[Members] Members ON KTP.MemberID = Members.ID
+                        WHERE KT.History = 0
+                        GROUP BY KT.ID, AssetID, Assets.Name,  FirstUsed, LastUsed, LengthKept`);// WHERE Name LIKE @searchTerm`);
             }
-            const assets = result.recordset;
-        
-            return { 
+            const kitList = result.recordset;
+            //console.log(loans)
+            return {
                 status: 200,
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(assets)
+                body: JSON.stringify(kitList)
             };
         } catch (err) {
             context.error('Database error: ', err);
@@ -90,7 +101,7 @@ app.http('getAssets', {
             }
             return {
                 status: 500,
-                body: "Failed to retrieve assets from database."
+                body: "Failed to retrieve kit list from database."
             }
         }
     }

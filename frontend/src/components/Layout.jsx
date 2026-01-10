@@ -15,6 +15,62 @@ export default function Layout({children}) {
         setMenuOpen(false);
         setOpenDropdown(null);
     };
+
+    function DropDownMenu(props) {
+        return (
+            <div className="relative group">
+                <Link to={props.head_link} className="hover:underline">{props.head_text}
+                </Link>
+                
+                <span className="inline-block text-xs transform transition-transform translate-y-0.5 duration-500 group-hover:rotate-180 pl-1 pr-1">
+                    <svg className={`w-4 h-4`}
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </span>
+                
+                <div className="
+                    pointer-events-none absolute left-0 top-full z-50 w-44 pt-2
+                    opacity-0 translate-y-1
+                    transition-all duration-200 ease-out
+                    group-hover:pointer-events-auto
+                    group-hover:opacity-100
+                    group-hover:translate-y-0
+                    rounded-md bg-club-green-300 dark:bg-club-orange-800
+                    text-black dark:text-white shadow-lg
+                    ">
+                    {props.items.map((item) => (
+                        <Link to={item.link} className="block px-4 py-2 text-sm hover:underline" key={item.id}>
+                            {item.text}
+                        </Link>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
+    function OffCanvasDropDownMenu(props) {
+        return (
+            <div>
+                <button className="flex justify-between w-full items-center px-2 py-2 hover:bg-club-orange-700 rounded" onClick={() => toggleDropdown(props.id)}>{props.head_text}
+                    <svg className={`w-4 h-4 transform transition-transform ${openDropdown === props.id ? 'rotate-180' : 'rotate-0'}`}
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+
+                {/* Dropdown items */}
+                {openDropdown === props.id && (
+                    props.items.map((item) => (
+                        <div className="flex flex-col pl-4 mt-2 space-y-1" key={item.id}>
+                            <Link to={item.link} className="block px-2 py-1 hover:bg-club-orange-600 rounded" onClick={() => {closeMenu()}}>{item.text}</Link>
+                        </div>
+                    ))
+                )}
+            </div>
+        )
+    }
+
     return (
         <div className="min-h-screen flex flex-col bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white bg-club-orange-100 dark:bg-club-green-950">
             <header className="sticky top-0 z-40 bg-club-green-300 dark:bg-club-orange-800 text-black dark:text-white p-4 shadow">
@@ -26,56 +82,20 @@ export default function Layout({children}) {
 
                         </Link>
                         <nav className="relative hidden md:flex space-x-4">
-                            {/* Assets Dropdown */}
-                            <div className="relative group">
-                                <Link to="/assets" className="hover:underline">Assets
-                                </Link>
-                                
-                                <span className="inline-block text-xs transform transition-transform translate-y-0.5 duration-500 group-hover:rotate-180 pl-1 pr-1">
-                                    <svg className={`w-4 h-4`}
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7"/>
-                                    </svg>
-                                </span>
-                                
-                                <div className="
-                                    pointer-events-none absolute left-0 top-full z-50 w-44 pt-2
-                                    opacity-0 translate-y-1
-                                    transition-all duration-200 ease-out
-                                    group-hover:pointer-events-auto
-                                    group-hover:opacity-100
-                                    group-hover:translate-y-0
-                                    rounded-md bg-club-green-300 dark:bg-club-orange-800
-                                    text-black dark:text-white shadow-lg
-                                    ">
-                                <Link to="/assets/new" className="block px-4 py-2 text-sm hover:underline">New</Link>
-                                </div>
-                            </div>
+                            <DropDownMenu head_link="/assets" head_text="Assets" items={[
+                                { id: 1, text: "New", link: "/assets/new" }
+                            ]} />
 
-                            {/* Loans Dropdown */}
-                            <div className="relative group">
-                                <Link to="/loans" className="hover:underline">Loans</Link>
+                            <DropDownMenu head_link="/loans" head_text="Loans" items={[
+                                { id: 1, text: "New", link: "/loans/new" },
+                                { id: 2, text: "Return", link: "/loans/return" }
+                            ]} />
 
-                                <span className="inline-block text-xs transform transition-transform translate-y-0.5 duration-500 group-hover:rotate-180 pl-1 pr-1">
-                                    <svg className={`w-4 h-4`}
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7"/>
-                                    </svg>
-                                </span>
-                                <div className="
-                                    pointer-events-none absolute left-0 top-full z-50 w-44 pt-2
-                                    opacity-0 translate-y-1
-                                    transition-all duration-200 ease-out
-                                    group-hover:pointer-events-auto
-                                    group-hover:opacity-100
-                                    group-hover:translate-y-0
-                                    rounded-md bg-club-green-300 dark:bg-club-orange-800
-                                    text-black dark:text-white shadow-lg
-                                    ">
-                                <Link to="/loans/new" className="block px-4 py-2 text-sm hover:underline">New</Link>
-                                <Link to="/loans/return" className="block px-4 py-2 text-sm hover:underline">Return</Link>
-                                </div>
-                            </div>
+                            <DropDownMenu head_link="kit-tracking" head_text="Kit Tracking" items={[
+                                { id: 1, text: "New", link: "/kit-tracking/new" }
+                            ]} />
+
+                            
                         </nav>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -119,43 +139,23 @@ export default function Layout({children}) {
                 <nav className="flex flex-col space-y-4 text-lg">
                 
                     {/* Assets */}
-                    <div>
-                        <button className="flex justify-between w-full items-center px-2 py-2 hover:bg-club-orange-700 rounded" onClick={() => toggleDropdown("assets")}>Assets
-                            <svg className={`w-4 h-4 transition-transform duration-200 ${openDropdown === 'assets' ? 'rotate-180' : 'rotate-0'}`}
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
 
-                        {/* Dropdown items */}
-                        {openDropdown === "assets" && (
-                        <div className="flex flex-col pl-4 mt-2 space-y-1">
-                            <Link to="/assets" className="block px-2 py-1 hover:bg-club-orange-600 rounded" onClick={() => {closeMenu()}}>List</Link>
-                            <Link to="/assets/new" className="block px-2 py-1 hover:bg-club-orange-600 rounded" onClick={() => closeMenu()}>New</Link>
-                        </div>
-                        )}
-                    </div>
+                    <OffCanvasDropDownMenu id="assets" head_text="Assets" items={[
+                        { id: 1, text: "List", link: "/assets" },
+                        { id: 2, text: "New", link: "/assets/new" }
+                    ]} />
 
-                    {/* Loans */}
-                    <div>
-                        <button
-                        className="flex justify-between w-full items-center px-2 py-2 hover:bg-club-orange-700 rounded" onClick={() => toggleDropdown("loans")}>
-                            Loans
-                            <svg className={`w-4 h-4 transition-transform duration-200 ${openDropdown === 'loans' ? 'rotate-180' : 'rotate-0'}`}
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
+                    <OffCanvasDropDownMenu id="loans" head_text="Loans" items={[
+                        { id: 1, text: "List", link: "/loans" },
+                        { id: 2, text: "New", link: "/loans/new" },
+                        { id: 3, text: "Return", link: "/loans/return" }
+                    ]} />
 
-                        {/* Dropdown items */}
-                        {openDropdown === "loans" && (
-                        <div className="flex flex-col pl-4 mt-2 space-y-1">
-                            <Link to="/loans" className="block px-2 py-1 hover:bg-club-orange-600 rounded" onClick={() => closeMenu()}>List</Link>
-                            <Link to="/loans/new" className="block px-2 py-1 hover:bg-club-orange-600 rounded" onClick={() => closeMenu()}>New</Link>
-                            <Link to="/loans/return" className="block px-2 py-1 hover:bg-club-orange-600 rounded" onClick={() => closeMenu()}>Return</Link>
-                        </div>
-                        )}
-                    </div>
+                    <OffCanvasDropDownMenu id="kit-tracking" head_text="Kit Tracking" items={[
+                        { id: 1, text: "List", link: "/kit-tracking" },
+                        { id: 2, text: "New", link: "/kit-tracking/new" }
+                    ]} />
+                    
                     <span><AuthName prefix="Signed in as " /></span>
                     <AuthButtons />
                 </nav>

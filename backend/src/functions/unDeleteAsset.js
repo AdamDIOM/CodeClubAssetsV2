@@ -71,8 +71,8 @@ app.http('unDeleteAsset', {
                 .input('ID', sql.NVarChar, id)
                 .input('User', sql.NVarChar, user)
                 .query(`
-                    INSERT INTO assets.Logs (AssetID, UserID, Operation)
-                    VALUES (@ID, @User, 'UNDELETE');
+                    INSERT INTO assets.Logs (AssetID, UserID, Operation, DataTable)
+                    VALUES (@ID, @User, 'UNDELETE', 'Assets');
                     `);
             return { 
                 status: 200,

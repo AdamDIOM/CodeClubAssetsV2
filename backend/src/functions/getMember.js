@@ -14,16 +14,16 @@ async function getSqlAccessToken(userAccessToken) {
     return token.token;
 }
 
-app.http('getAssets', {
+app.http('getMember', {
     methods: ['GET'],
-    authLevel: 'anonymous',
+    authLevel: 'user',
     handler: async (request, context) => {
-        context.log(`getAssets called at "${request.url}"`);
+        context.log(`getMember called at "${request.url}"`);
 
         const searchTerm = request.query.get('f') || '';
         const authHeader = request.headers.get('Authorization')
-        const specificID = request.headers.get('ID') || null;
-        const filter = request.headers.get('Filter') || null;
+        const MMID = request.headers.get('MMID') || null;
+        const ID = request.headers.get('ID') || null;
 
         if(!authHeader.startsWith('Bearer ')) {
             return {status:401, body: JSON.stringify("Missing or invalid Authorization header")}
@@ -51,28 +51,25 @@ app.http('getAssets', {
             await pool.connect();
             var result;
             
-                //console.log(specificID)
-                //console.log(specificColumn)
-            if(specificID) {
+            if(MMID) {
                 result = await pool.request()
-                    .input('searchTerm', sql.NVarChar, `${specificID}`)
-                    .query('SELECT * FROM assets.Assets WHERE ID = @searchTerm');
+                    .input('searchTerm', sql.NVarChar, `${MMID}`)
+                    .query(`SELECT ID, Name FROM [membership].[Members] WHERE MMID = @searchTerm`);
             }
-            else if(filter == "KT") {
+            else if(ID) {
                 result = await pool.request()
-                    .query('SELECT ID, Name, DefaultUseLength FROM assets.Assets');
+                    .input('searchTerm', sql.NVarChar, `${ID}`)
+                    .query(`SELECT ID, Name FROM [membership].[Members] WHERE ID = @searchTerm`);
             }
             else{
-                result = await pool.request()
-                    .input('searchTerm', sql.NVarChar, `%${searchTerm}%`)
-                    .query('SELECT * FROM assets.Assets WHERE Name LIKE @searchTerm');
+                throw new Error("No search parameters provided");
             }
-            const assets = result.recordset;
-        
-            return { 
+            const member = result.recordset;
+            //console.log(loans)
+            return {
                 status: 200,
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(assets)
+                body: JSON.stringify(member)
             };
         } catch (err) {
             context.error('Database error: ', err);
@@ -90,7 +87,7 @@ app.http('getAssets', {
             }
             return {
                 status: 500,
-                body: "Failed to retrieve assets from database."
+                body: "Failed to retrieve kit list from database."
             }
         }
     }

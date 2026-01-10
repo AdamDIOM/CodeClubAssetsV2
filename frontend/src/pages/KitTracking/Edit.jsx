@@ -15,22 +15,22 @@ function GenericInput(props) {
         <>
             <input name={props.name} id={props.name} placeholder={props.placeholder} value={props.value} onChange={props.onChange} required={props.required} disabled={disabled} className="mx-auto w-full p-2 mb-0 mt-4 border rounded focus:outline-none focus:ring-2 focus:ring-club-orange-300 focus:dark:ring-club-green-500 bg-white dark:bg-neutral-800 disabled:bg-gray-100 dark:disabled:bg-neutral-700 disabled:text-gray-700 dark:disabled:text-gray-200 placeholder-gray-400 disabled:border-gray-400 disabled:cursor-not-allowed disabled:opacity-70" />
             {props.label && (
-                <label htmlFor={props.name} className="text-xs text-gray-400 mb-4 p-2 block">{props.label}</label>
+                <label htmlFor={props.name} className="text-xs text-gray-400 mb-0 p-2 pb-0 block">{props.label}</label>
             )}
         </>
     )
 }
 
 
-export default function Edit() {
+export default function EditKT() {
 
 
     const { id } = useParams()
 
     const { instance, accounts } = useMsal();
-    const [form, setForm] = useState({ ID: '', Name: '', Description: null, Location: null, SerialNumber: null, ParentID: null, Tags: null, TestsRequired: 0, DefaultUseLength: 0 });
+    const [form, setForm] = useState({ ID: '', Asset: '', Users: null, StartDate: null, LengthKept: 0, CurrentReturnDate: null, DateReturned: null});
 
-    const [originalData, setOriginalData] = useState({ ID: '', Name: '', Description: null, Location: null, SerialNumber: null, ParentID: null, Tags: null, TestsRequired: 0, DefaultUseLength: 0 });
+    const [originalData, setOriginalData] = useState({ ID: '', Asset: '', Users: null, StartDate: null, LengthKept: 0, CurrentReturnDate: null, DateReturned: null });
 
     const [message, setMessage] = useState(null);
 
@@ -47,6 +47,7 @@ export default function Edit() {
     const [changed, setChanged] = useState(false);
 
     const [deleting, setDeleting] = useState(false);
+    const [renewing, setRenewing] = useState(false);
 
     const handleChange = e => {
         setChanged(true);
@@ -56,6 +57,10 @@ export default function Edit() {
 
     const handleDelete = () => {
         setDeleting(true)
+    }
+
+    const handleRenew = () => {
+        setRenewing(true)
     }
 
     const handleConfirmedDelete = async () => {
@@ -70,7 +75,7 @@ export default function Edit() {
             const accessToken = tokenResponse.accessToken;
 
             setUploading(true)
-            const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/deleteAsset/${id}`, {
+            const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/returnTrackedKit/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -92,7 +97,8 @@ export default function Edit() {
             } else {
                 setToast(reply)
             }
-            form.Deleted = 1;
+            form.History = 1;
+            form.DateReturned = new Date();
             setEditPerms(false)
         } catch (err) {
             console.log(err)
@@ -109,6 +115,58 @@ export default function Edit() {
         setDeleting(false)
     }
 
+    const handleConfirmedRenew = async () => {
+        setRenewing(false)
+        try {
+            const request = {
+                scopes: [import.meta.env.VITE_BACKEND_API_SCOPE],
+                account: accounts[0]
+            };
+
+            const tokenResponse = await instance.acquireTokenSilent(request);
+            const accessToken = tokenResponse.accessToken;
+
+            setUploading(true)
+            const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/aRenewTrackedKit`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                    'x-functions-key': `${import.meta.env.VITE_CREATE_API_KEY}`
+                },
+                body: JSON.stringify([form, originalData])
+            });
+
+            setUploading(false)
+
+            if(!res.ok) {
+                const errorBody = await res.json(); 
+                throw { status: res.status, body: errorBody };
+            }
+            var reply = await res.json()
+
+            if(toast){
+                setCloseToast(true);
+                const timer = setTimeout(() => {setToast(reply)}, 400);
+            } else {
+                setToast(reply)
+            }
+            form.LastUsed = new Date()
+        } catch (err) {
+            console.log(err)
+            if(err.status === "403"){
+                setMessage("You do not have permission to modify the asset database.")
+            }
+            else{
+                setMessage(`Error ${err.status}: ${err.body}`)
+            }
+        }
+    }
+
+    const handleCancelledRenew = () => {
+        setRenewing(false)
+    }
+
     const handleUnDelete = async () => {
         try {
             const request = {
@@ -119,9 +177,9 @@ export default function Edit() {
             const tokenResponse = await instance.acquireTokenSilent(request);
             const accessToken = tokenResponse.accessToken;
 
-            console.log("Undeleting")
+            //console.log("un-returning")
             setUploading(true)
-            const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/unDeleteAsset/${id}`, {
+            const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/undoTrackedKitReturn/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -129,7 +187,7 @@ export default function Edit() {
                 }
             });
 
-            console.log("Undeleted")
+            //console.log("Undeleted")
             setUploading(false)
 
             if(!res.ok) {
@@ -149,7 +207,8 @@ export default function Edit() {
                 setEditPerms(true)
                 setDeletePerms(true)
             }
-            form.Deleted = 0;
+            form.History = 0;
+            form.DateReturned = null;
         } catch (err) {
             console.log(err)
             if(err.status === "403"){
@@ -181,7 +240,7 @@ export default function Edit() {
                 }
 
                 if(x.includes('db_datareader')) setViewPerms(true)
-                const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/getAssets`, {
+                const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/getTrackedKit`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                         ID: id
@@ -197,13 +256,14 @@ export default function Edit() {
                 var data = await res.json();
                 if(data.length < 1){
                     setViewPerms(false)
-                    throw {status: 404, body: "Asset not found"}
+                    throw {status: 404, body: "Tracked Kit Instance not found"}
                 }
-                if(data[0].Deleted == 1) setEditPerms(false)
+                if(data[0].History == 1) setEditPerms(false)
                 setForm(data[0]);
                 setOriginalData(data[0])
+                console.log(data[0])
             } catch (err) {
-                console.error("Error fetching assets: ", err);
+                console.error("Error fetching tracked kit instance: ", err);
                 if(err.status === 401){
                     setMessage("You do not have permission to view the asset database.")
                 }
@@ -240,7 +300,7 @@ export default function Edit() {
 
             console.log("Putting")
             setUploading(true)
-            const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/updateAsset`, {
+            const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/updateTrackedKit`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -282,7 +342,7 @@ export default function Edit() {
         <EditPermsContext.Provider value={editPerms}>
         <div className="sm:max-w-xl max-w-4/5 mx-auto ">
                     
-            <h1 className="text-2xl font-bold mb-4">Edit Asset {id}</h1>
+            <h1 className="text-2xl font-bold mb-4">Edit Tracked Kit Instance {id}</h1>
             {downloading ? (
                 <>
                     <div className="flex justify-center items-center h-64">
@@ -301,17 +361,20 @@ export default function Edit() {
                 <>
             <form onSubmit={handleSubmit} className="space-y-4 sm:block  ">
                 <GenericInput name="ID" placeholder="ID" value={form.ID} onChange={handleChange} required disabled />
-                <GenericInput name="Name" placeholder="Name" value={form.Name} onChange={handleChange} required />
-                <GenericInput name="Description" placeholder="Description" value={form.Description} onChange={handleChange} />
-                <GenericInput name="Location" placeholder="Location" value={form.Location} onChange={handleChange} />
-                <GenericInput name="SerialNumber" placeholder="Serial Number" value={form.SerialNumber} onChange={handleChange} />
-                <GenericInput name="ParentID" placeholder="Parent ID" value={form.ParentID} onChange={handleChange} />
-                <GenericInput name="Tags" placeholder="Tags (separated by ;)" value={form.Tags} onChange={handleChange} />
-                <GenericInput name="DefaultUseLength" placeholder="Default Use Length" value={form.DefaultUseLength} onChange={handleChange} label="This is how long (in days) an asset can be reserved for an individual in the case that it has exclusive use" />
+                <GenericInput name="Asset" placeholder="Asset" value={form.AssetID + ": " + form.AssetName || '—'} onChange={handleChange} required disabled />
+                <GenericInput name="Users" placeholder="User(s)" value={form.Members} onChange={handleChange} disabled/>
+                <GenericInput name="StartDate" placeholder="Start Date" value={`Start Date: ${(new Date(form.FirstUsed)).toLocaleDateString()}`} onChange={handleChange} disabled />
+                <GenericInput name="LastUsed" placeholder="Last Used" value={`Last Used: ${(new Date(form.LastUsed)).toLocaleDateString()}`} onChange={handleChange} disabled />
+                <GenericInput name="LengthKept" placeholder="Length Kept" value={form.LengthKept} onChange={handleChange} label="This is how long (in days) the asset is reserved for the above named individual(s)" />
+                {form.History == 0 ?
+                    <GenericInput name="CurrentReturnDate" placeholder="Current Return Date" value={`Current Return Date: ${(new Date(new Date("2026-01-09T00:00:00.000Z").setDate(new Date(form.LastUsed).getDate() + Number(form.LengthKept)))).toLocaleDateString()}`} onChange={handleChange} disabled />
+                    :
+                    <GenericInput name="ReturnDate" placeholder="Return Date" value={`Date Returned: ${(new Date(form.DateReturned)).toLocaleDateString()}`} onChange={handleChange} disabled />
+                }
                 {uploading
                 ? (
                     <>
-                    <button type="submit" disabled className="w-full ring-2 ring-club-orange-300 dark:ring-club-green-500 bg-club-orange-400 dark:bg-club-green-800 px-4 py-2 rounded text-neutral-700 dark:text-neutral-300 cursor-wait font-semibold">Updating...</button>
+                    <button type="submit" disabled className="w-full ring-2 ring-club-orange-300 dark:ring-club-green-500 bg-club-orange-400 dark:bg-club-green-800 px-4 py-2 mt-4 rounded text-neutral-700 dark:text-neutral-300 cursor-wait font-semibold">Working...</button>
 
                     <div className="flex justify-center items-center h-20">
                         <div className="animate-spin rounded-full h-16 w-16 border-t-6 border-b-6 border-club-orange-300 dark:border-club-green-500"></div>
@@ -326,20 +389,27 @@ export default function Edit() {
                     </>
                 )
                 : editPerms && ( changed ? 
-                <button type="submit" className="w-full bg-white ring-2 ring-club-orange-300 dark:ring-club-green-500 dark:bg-neutral-800 hover:bg-club-orange-100 hover:dark:bg-club-green-600 active:bg-club-orange-400 dark:active:bg-club-green-800 px-4 py-2 rounded text-neutral-700 dark:text-neutral-300 cursor-pointer font-semibold">Save</button>
+                <button type="submit" className="w-full bg-white ring-2 ring-club-orange-300 dark:ring-club-green-500 dark:bg-neutral-800 hover:bg-club-orange-100 hover:dark:bg-club-green-600 active:bg-club-orange-400 dark:active:bg-club-green-800 px-4 py-2 mt-4 rounded text-neutral-700 dark:text-neutral-300 cursor-pointer font-semibold">Save</button>
             :
-            <button type="submit" disabled className="w-full border bg-gray-100 dark:bg-neutral-700 px-4 py-2 rounded text-gray-700 dark:text-gray-200 cursor-not-allowed border-gray-400 opacity-70 font-semibold">Save</button>
+            <button type="submit" disabled className="w-full border bg-gray-100 dark:bg-neutral-700 px-4 py-2 mt-4 rounded text-gray-700 dark:text-gray-200 cursor-not-allowed border-gray-400 opacity-70 font-semibold">Save</button>
         )
                 }
 
-            
-
                 {message && <p className="mt-4 text-red-600">{message}</p>}
             </form>
-            {deletePerms && (form.Deleted == 0 ? 
-            <button className="w-full bg-white ring-2 ring-red-500 dark:bg-neutral-800 hover:bg-red-500 hover:ring-red-300 hover:dark:bg-red-700 active:bg-red-300 active:ring-red-500 active:dark:bg-red-900 active:dark:ring-red-500 px-4 py-2 mt-8 rounded text-neutral-700 dark:text-neutral-300 cursor-pointer font-semibold" onClick={handleDelete}>Delete</button>
+
+            {editPerms && ( new Date(form.LastUsed).toDateString() != new Date().toDateString() ?
+                <button className="w-full bg-white ring-2 ring-club-orange-300 dark:ring-club-green-500 dark:bg-neutral-800 hover:bg-club-orange-100 hover:dark:bg-club-green-600 active:bg-club-orange-400 dark:active:bg-club-green-800 px-4 py-2 rounded text-neutral-700 dark:text-neutral-300 cursor-pointer font-semibold mt-4" onClick={handleRenew}>Renew</button>
+
+                :
+                <button disabled className="w-full border bg-gray-100 dark:bg-neutral-700 px-4 py-2 rounded text-gray-700 dark:text-gray-200 cursor-not-allowed border-gray-400 opacity-70 font-semibold mt-4" onClick={handleRenew}>Kit Used Today</button>
+            )}
+
+            {deletePerms && (form.History == 0 ? 
+            <button className="w-full bg-white ring-2 ring-red-500 dark:bg-neutral-800 hover:bg-red-500 hover:ring-red-300 hover:dark:bg-red-700 active:bg-red-300 active:ring-red-500 active:dark:bg-red-900 active:dark:ring-red-500 px-4 py-2 mt-8 rounded text-neutral-700 dark:text-neutral-300 cursor-pointer font-semibold" onClick={handleDelete}>Kit Handed Back</button>
             :
-            <button className="w-full bg-white ring-2 ring-club-orange-300 dark:ring-club-green-500 dark:bg-neutral-800 hover:bg-club-orange-100 hover:dark:bg-club-green-600 active:bg-club-orange-400 dark:active:bg-club-green-800 px-4 py-2 rounded text-neutral-700 dark:text-neutral-300 cursor-pointer font-semibold mt-8" onClick={handleUnDelete}>Un-Delete</button>)}
+            (new Date(form.DateReturned)).toLocaleDateString() == new Date().toLocaleDateString() &&
+            <button className="w-full bg-white ring-2 ring-club-orange-300 dark:ring-club-green-500 dark:bg-neutral-800 hover:bg-club-orange-100 hover:dark:bg-club-green-600 active:bg-club-orange-400 dark:active:bg-club-green-800 px-4 py-2 rounded text-neutral-700 dark:text-neutral-300 cursor-pointer font-semibold mt-8" onClick={handleUnDelete}>Undo Kit Return</button>)}
             </>
             ):
             
@@ -351,10 +421,10 @@ export default function Edit() {
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                     <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-6 max-w-sm w-full mx-4">
                         <h2 className="text-lg font-bold mb-2 text-center">
-                        Confirm Deletion
+                        Confirm Kit Return
                         </h2>
                         <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
-                        Are you sure you want to delete <b>{id}</b>?
+                        Are you sure that this piece of kit ({(form.AssetName || '') + (form.AssetName && form.AssetID && ", ") + (form.AssetID || '')}) is no longer being used?
                         </p>
 
                         <div className="flex justify-center gap-3">
@@ -362,11 +432,38 @@ export default function Edit() {
                             onClick={handleConfirmedDelete}
                             className="px-4 py-2 rounded-lg font-semibold cursor-pointer ring-2 ring-red-400 bg-red-600 hover:bg-red-400 hover:ring-red-600 dark:hover:ring-red-400 dark:hover:bg-red-700 active:bg-red-500 active:ring-red-300 dark:active:ring-red-400 dark:active:bg-red-900 text-white"
                         >
-                            Delete
+                            Return
                         </button>
                         <button
                             onClick={handleCancelledDelete}
                             className="px-4 py-2 rounded-lg font-semibold cursor-pointer ring-2 ring-club-orange-300 dark:ring-club-green-500 dark:bg-neutral-800 hover:bg-club-orange-100 hover:dark:bg-club-green-600 active:bg-club-orange-400 dark:active:bg-club-green-800 text-neutral-700 dark:text-neutral-300"
+                        >
+                            Cancel
+                        </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {renewing && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-6 max-w-sm w-full mx-4">
+                        <h2 className="text-lg font-bold mb-2 text-center">
+                        Confirm Kit Renewal
+                        </h2>
+                        <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
+                        This will not check whether the users are signed in today.
+                        </p>
+
+                        <div className="flex justify-center gap-3">
+                        <button
+                            onClick={handleConfirmedRenew}
+                            className="px-4 py-2 rounded-lg font-semibold cursor-pointer ring-2 ring-club-orange-300 dark:ring-club-green-500 dark:bg-neutral-800 hover:bg-club-orange-100 hover:dark:bg-club-green-600 active:bg-club-orange-400 dark:active:bg-club-green-800 text-neutral-700 dark:text-neutral-300"
+                        >
+                            Renew
+                        </button>
+                        <button
+                            onClick={handleCancelledRenew}
+                            className="px-4 py-2 rounded-lg font-semibold cursor-pointer ring-2 ring-red-500 dark:bg-neutral-800 hover:bg-red-500 hover:ring-red-300 hover:dark:bg-red-700 active:bg-red-300 active:ring-red-500 active:dark:bg-red-900 active:dark:ring-red-500 text-white"
                         >
                             Cancel
                         </button>
