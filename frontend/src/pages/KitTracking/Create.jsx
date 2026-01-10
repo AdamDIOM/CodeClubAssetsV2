@@ -4,6 +4,7 @@ import Toast from "../../components/Toast";
 import { useEffect } from "react";
 import { checkPermissions } from "../../components/CheckPermissions";
 import { useRef } from "react";
+import { m } from "framer-motion";
 
 function GenericInput(props) {
     return (
@@ -16,7 +17,7 @@ function GenericInput(props) {
     )
 }
 
-function MultiInput({ values, onChange, placeholder, onScan }) {
+function MultiInput({ values, onChange, placeholder, onScan, dropdowns }) {
   const [input, setInput] = useState("")
   const [disabled, setDisabled] = useState(false)
   const inputRef = useRef(null)
@@ -80,7 +81,14 @@ function MultiInput({ values, onChange, placeholder, onScan }) {
           className="flex-1 min-w-[120px] border-none p-1 outline-none bg-transparent placeholder-gray-400 disabled:bg-gray-100 disabled:dark:bg-neutral-700 disabled:text-gray-700 disabled:dark:text-gray-200 disabled:cursor-not-allowed disabled:border-gray-400 disabled:opacity-70 disabled:ring-0 disabled:border"
           ref={inputRef}
           disabled={disabled}
+          list="MembersList"
         />
+
+        <datalist id="MembersList">
+          {dropdowns.map((member, i) => (
+            <option key={i} value={member.Name} />
+          ))}
+        </datalist>
       </div>
     </div>
   )
@@ -103,6 +111,8 @@ export default function CreateKT() {
 
     const [processState, setProcessState] = useState(0)
     const [codes, setCodes] = useState([])
+
+    const [members, setMembers] = useState([])
     // 0 = loading; 1 = start; 2 = loading-asset-check; 3 = member-input
 
     const handleChange = e => {
@@ -269,6 +279,26 @@ export default function CreateKT() {
                     throw { status: res.status, body: errorBody };
                 }
                 var data = await res.json();
+
+                const resMembers = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/getMember`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        'x-functions-key': `${import.meta.env.VITE_CREATE_API_KEY}`,
+                        Flag: "All"
+                    }
+                });
+
+                if(!resMembers.ok) {
+                    console.log("error!");
+                    const errorBody = await resMembers.json();
+
+                    throw { status: resMembers.status, body: errorBody };
+                }
+
+                var dataMembers = await resMembers.json();
+                console.log(dataMembers)
+                setMembers(dataMembers);
+
                 if(data.length > 0){
                     setMessage(`Error: ${form.AssetID} is already checked out in an active Kit Tracking instance.`)
                     setProcessState(1);
@@ -277,6 +307,10 @@ export default function CreateKT() {
                     form.DefaultUseLength = assetsList.find(asset => asset.ID === form.AssetID)?.DefaultUseLength
                     setProcessState(3)
                 }
+
+
+                
+                
             } catch (err) {
                 console.error("Error fetching assets: ", err);
                 if(err.status === 401){
@@ -313,7 +347,7 @@ export default function CreateKT() {
                         }
                     });
                 }
-                else{
+                else if (Number.isInteger(parseInt(val))) {
                     const tokenResponse = await instance.acquireTokenSilent(request);
                     const accessToken = tokenResponse.accessToken;
 
@@ -322,6 +356,18 @@ export default function CreateKT() {
                             Authorization: `Bearer ${accessToken}`,
                             'x-functions-key': `${import.meta.env.VITE_CREATE_API_KEY}`,
                             ID: val
+                        }
+                    });
+                }
+                else {
+                    const tokenResponse = await instance.acquireTokenSilent(request);
+                    const accessToken = tokenResponse.accessToken;
+
+                    res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/getMember`, {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                            'x-functions-key': `${import.meta.env.VITE_CREATE_API_KEY}`,
+                            Name: val
                         }
                     });
                 }
@@ -438,7 +484,13 @@ export default function CreateKT() {
                         {processState > 2 && (
                             <>
                                 <GenericInput name="DefaultUseLength" placeholder="Length Kept" value={form.DefaultUseLength} onChange={handleChange} label="This is how long (in days) the asset is reserved for the below named individual(s)"/>
-                                <MultiInput values={form.Members} onChange={members => setForm({ ...form, Members: members })} onScan={processMember} placeholder="Scan member cards..." />
+                                <MultiInput
+                                    values={form.Members}
+                                    onChange={members => setForm({ ...form, Members: members })}
+                                    onScan={processMember}
+                                    placeholder="Scan member cards..."
+                                    dropdowns={members}
+                                     />
                                     {processState >= 5 && (
                                     <button type="submit" onClick={handleFinalise} className="w-full bg-white ring-2 ring-club-orange-300 dark:ring-club-green-500 dark:bg-neutral-800 hover:bg-club-orange-100 hover:dark:bg-club-green-600 active:bg-club-orange-400 dark:active:bg-club-green-800 px-4 py-2 rounded text-neutral-700 dark:text-neutral-300 cursor-pointer mt-4 disabled:bg-gray-100 disabled:dark:bg-neutral-700 disabled:text-gray-700 disabled:dark:text-gray-200 disabled:cursor-not-allowed disabled:border-gray-400 disabled:opacity-70 disabled:ring-0 disabled:border" disabled={processState == 6}>Confirm</button>
                                     )}

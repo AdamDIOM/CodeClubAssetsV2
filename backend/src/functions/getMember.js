@@ -24,6 +24,8 @@ app.http('getMember', {
         const authHeader = request.headers.get('Authorization')
         const MMID = request.headers.get('MMID') || null;
         const ID = request.headers.get('ID') || null;
+        const Name = request.headers.get('Name') || null;
+        const Flag = request.headers.get('Flag') || null;
 
         if(!authHeader.startsWith('Bearer ')) {
             return {status:401, body: JSON.stringify("Missing or invalid Authorization header")}
@@ -60,6 +62,15 @@ app.http('getMember', {
                 result = await pool.request()
                     .input('searchTerm', sql.NVarChar, `${ID}`)
                     .query(`SELECT ID, Name FROM [membership].[Members] WHERE ID = @searchTerm`);
+            }
+            else if(Name) {
+                result = await pool.request()
+                    .input('searchTerm', sql.NVarChar, `${Name}`)
+                    .query(`SELECT ID, Name FROM [membership].[Members] WHERE Name = @searchTerm`);
+            }
+            else if(Flag == "All") {
+                result = await pool.request()
+                    .query(`SELECT Name FROM [membership].[Members]`);
             }
             else{
                 throw new Error("No search parameters provided");
