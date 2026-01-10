@@ -242,8 +242,9 @@ export default function EditKT() {
                 if(x.includes('db_datareader')) setViewPerms(true)
                 const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/getTrackedKit`, {
                     headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        ID: id
+                        'Authorization': `Bearer ${accessToken}`,
+                        'x-functions-key': `${import.meta.env.VITE_CREATE_API_KEY}`,
+                        'ID': id
                     }
                 });
     
