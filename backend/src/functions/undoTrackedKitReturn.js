@@ -16,13 +16,13 @@ async function getSqlAccessToken(userAccessToken) {
 }
 
 
-app.http('deleteAsset', {
-    route: 'deleteAsset/{id}',
-    methods: ['DELETE'],
+app.http('undoTrackedKitReturn', {
+    route: 'undoTrackedKitReturn/{id}',
+    methods: ['PUT'],
     authLevel: 'user',
     handler: async (request, context) => {
         const id = request.params.id;
-        context.log(`deleteAsset called at "${request.url}"`);
+        context.log(`undoTrackedKitReturn called at "${request.url}"`);
 
         const authHeader = request.headers.get('Authorization')
         if(!authHeader.startsWith('Bearer ')) {
@@ -36,7 +36,7 @@ app.http('deleteAsset', {
 
 
         if(!id) {
-            return {status: 400, body: JSON.stringify("Missing asset id")}
+            return {status: 400, body: JSON.stringify("Missing tracked kit id")}
         }
 
         try {
@@ -61,9 +61,9 @@ app.http('deleteAsset', {
             const result = await pool.request()
                 .input('ID', sql.NVarChar, id)
                 .query(`
-                    UPDATE assets.Assets
+                    UPDATE assets.KitTracking
                     SET
-                    Deleted = 1
+                    History = 0, DateReturned = NULL
                     WHERE ID = @ID;
                 `);
 
@@ -72,11 +72,11 @@ app.http('deleteAsset', {
                 .input('User', sql.NVarChar, user)
                 .query(`
                     INSERT INTO assets.Logs (AssetID, UserID, Operation, DataTable)
-                    VALUES (@ID, @User, 'DELETE', 'Assets');
+                    VALUES (@ID, @User, 'UNDELETE', 'KitTracking');
                     `);
             return { 
                 status: 200,
-                body: JSON.stringify(`Asset ${id} deleted successfully.`)
+                body: JSON.stringify(`Tracked Kit ${id} un-returned successfully.`)
             };
         } catch (err) {
             context.error('Database error: ', err);
@@ -113,7 +113,7 @@ app.http('deleteAsset', {
             }
             return {
                 status: 500,
-                body: JSON.stringify("Failed to delete asset.")
+                body: JSON.stringify("Failed to un-return tracked kit.")
             }
         }
     }

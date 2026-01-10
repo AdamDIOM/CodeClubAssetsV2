@@ -72,8 +72,8 @@ app.http('createAsset', {
                 .input('ID', sql.NVarChar, assetData.ID)
                 .input('User', sql.NVarChar, user)
                 .query(`
-                    INSERT INTO assets.Logs (AssetID, UserID, Operation)
-                    VALUES (@ID, @User, 'CREATE');
+                    INSERT INTO assets.Logs (AssetID, UserID, Operation, DataTable)
+                    VALUES (@ID, @User, 'CREATE', 'Assets');
                     `);
             return { 
                 status: 201,

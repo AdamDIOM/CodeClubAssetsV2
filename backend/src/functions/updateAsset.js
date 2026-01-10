@@ -105,8 +105,8 @@ app.http('updateAsset', {
                 .input('User', sql.NVarChar, user)
                 .input('Notes', sql.NVarChar, changes)
                 .query(`
-                    INSERT INTO assets.Logs (AssetID, UserID, Operation, Note)
-                    VALUES (@ID, @User, 'UPDATE', @Notes);
+                    INSERT INTO assets.Logs (AssetID, UserID, Operation, Note, DataTable)
+                    VALUES (@ID, @User, 'UPDATE', @Notes, 'Assets');
                     `);
             return { 
                 status: 200,

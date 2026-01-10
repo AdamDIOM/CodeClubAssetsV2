@@ -91,6 +91,9 @@ export default function Layout({children}) {
                                 { id: 2, text: "Return", link: "/loans/return" }
                             ]} />
 
+                            <DropDownMenu head_link="kit-tracking" head_text="Kit Tracking" items={[
+                                { id: 1, text: "New", link: "/kit-tracking/new" }
+                            ]} />
 
                             
                         </nav>
@@ -148,6 +151,10 @@ export default function Layout({children}) {
                         { id: 3, text: "Return", link: "/loans/return" }
                     ]} />
 
+                    <OffCanvasDropDownMenu id="kit-tracking" head_text="Kit Tracking" items={[
+                        { id: 1, text: "List", link: "/kit-tracking" },
+                        { id: 2, text: "New", link: "/kit-tracking/new" }
+                    ]} />
                     
                     <span><AuthName prefix="Signed in as " /></span>
                     <AuthButtons />

@@ -1,26 +1,25 @@
 import { useMsal } from '@azure/msal-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import AssetTable from './components/AssetTable';
 import { checkPermissions } from '../../components/CheckPermissions';
+import KTTable from './components/KTTable';
 
 
-export default function List() {
+export default function KitTracking() {
     const { instance, accounts } = useMsal();
     const [ searchParams, setSearchParams] = useSearchParams();
 
     const initialSearch = searchParams.get('f') || '';
     const [searchInput, setSearchInput] = useState(initialSearch);
-    
-    const [assets, setAssets] = useState([]);
+
+    const [loans, setLoans] = useState([]);
     const [error, setError] = useState(null);
 
     const [loading, setLoading] = useState(false);
 
     const [editPerms, setEditPerms] = useState(false)
 
-    const fetchAssets = async() => {
-        if (!accounts.length) return;
+    const fetchLoans = async() => {
         const request = {
             scopes: [import.meta.env.VITE_BACKEND_API_SCOPE],
             account: accounts[0]
@@ -29,13 +28,14 @@ export default function List() {
         try {
             const tokenResponse = await instance.acquireTokenSilent(request);
             const accessToken = tokenResponse.accessToken;
-
+            
             const x = await checkPermissions(accessToken);
             if(x.includes('db_datawriter')) setEditPerms(true)
-            
-            const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/getAssets`, {
+
+            const res = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/getTrackedKit`, {
                 headers: {
-                    Authorization: `Bearer ${accessToken}`
+                    Authorization: `Bearer ${accessToken}`,
+                    'x-functions-key': `${import.meta.env.VITE_CREATE_API_KEY}`
                 }
             });
 
@@ -44,13 +44,12 @@ export default function List() {
             
                 throw { status: res.status, body: errorBody };
             }
-            var data = await res.json();
-            data = data.filter(asset => asset.Deleted == 0)
-            setAssets(data);
+            const data = await res.json();
+            setLoans(data);
         } catch (err) {
-            console.error("Error fetching assets: ", err);
+            console.error("Error fetching loans: ", err);
             if(err.status === 401){
-                setError("You do not have permission to view the asset database.")
+                setError("You do not have permission to view the loans database.")
             }
             else{
                 setError(`Error ${err.status}: ${err.body}`)
@@ -66,23 +65,22 @@ export default function List() {
             return;
         }
         setLoading(true)
-        fetchAssets();
+        fetchLoans();
     }, [accounts]);
 
-
-    const filteredAssets = useMemo(() => {
+    const filteredLoans = useMemo(() => {
         const term = searchInput.toLowerCase();
-        if(!term) return assets;
-        return assets.filter(asset => 
-            asset.Name?.toLowerCase().includes(term) || asset.Description?.toLowerCase().includes(term) || asset.ID.toLowerCase().includes(term) || (asset.Tags != null && asset.Tags.toLowerCase().includes(term))
+        if(!term) return loans;
+        return loans.filter(loan => 
+            loan.AssetID?.toLowerCase().includes(term) || loan.AssetName?.toLowerCase().includes(term) || loan.Members.toLowerCase().includes(term)
         )
-    }, [assets, searchInput])
+    }, [loans, searchInput])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const trimmed = searchInput.trim()
         setSearchParams(trimmed? {f: trimmed} : {});
-        await fetchAssets();
+        await fetchLoans();
     }
 
     const handleUpdate = (e) => {
@@ -112,26 +110,25 @@ export default function List() {
                 </div>
                 </>
             ) : (
-                    <>
-                        <form onSubmit={handleSubmit} className='sticky top-20 z-11 w-full pb-4 flex gap-2'>
-                            <input
-                                type="text"
-                                placeholder="Search..."
-                                value={searchInput}
-                                onChange={handleUpdate}
-                                className='flex-grow px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-club-orange-300 focus:dark:ring-club-green-500 bg-white dark:bg-neutral-800 w-80'
-                            />
-                        </form>
-                        {error && <p className='text-red-600'>{error}</p>}
-                        {filteredAssets.length ? (
-                            <AssetTable assets={filteredAssets} edit={editPerms}/>   
-                        ) : (
-                            !error && <p>No assets found.</p>
-                        )}
-                        
-                  </>
+                <>
+                    <form onSubmit={handleSubmit} className='sticky top-20 z-11 w-full pb-4 flex gap-2'>
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            value={searchInput}
+                            onChange={handleUpdate}
+                            className='flex-grow px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-club-orange-300 focus:dark:ring-club-green-500 bg-white dark:bg-neutral-800 w-80'
+                        />
+                    </form>
+                    {error && <p className='text-red-600'>{error}</p>}
+                    {filteredLoans.length ? (
+                        <KTTable loans={filteredLoans} edit={editPerms}/>   
+                    ) : (
+                        !error && <p>No loans found.</p>
+                    )}
+                    
+                </>
             )}            
         </div>
     )
 }
-

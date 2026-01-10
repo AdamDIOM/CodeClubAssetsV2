@@ -16,13 +16,13 @@ async function getSqlAccessToken(userAccessToken) {
 }
 
 
-app.http('deleteAsset', {
-    route: 'deleteAsset/{id}',
+app.http('returnTrackedKit', {
+    route: 'returnTrackedKit/{id}',
     methods: ['DELETE'],
     authLevel: 'user',
     handler: async (request, context) => {
         const id = request.params.id;
-        context.log(`deleteAsset called at "${request.url}"`);
+        context.log(`returnTrackedKit called at "${request.url}"`);
 
         const authHeader = request.headers.get('Authorization')
         if(!authHeader.startsWith('Bearer ')) {
@@ -60,10 +60,11 @@ app.http('deleteAsset', {
             await pool.connect();
             const result = await pool.request()
                 .input('ID', sql.NVarChar, id)
+                .input('TODAY', sql.DateTime, new Date())
                 .query(`
-                    UPDATE assets.Assets
+                    UPDATE assets.KitTracking
                     SET
-                    Deleted = 1
+                    History = 1, DateReturned = @TODAY
                     WHERE ID = @ID;
                 `);
 
@@ -72,11 +73,11 @@ app.http('deleteAsset', {
                 .input('User', sql.NVarChar, user)
                 .query(`
                     INSERT INTO assets.Logs (AssetID, UserID, Operation, DataTable)
-                    VALUES (@ID, @User, 'DELETE', 'Assets');
+                    VALUES (@ID, @User, 'DELETE', 'KitTracking');
                     `);
             return { 
                 status: 200,
-                body: JSON.stringify(`Asset ${id} deleted successfully.`)
+                body: JSON.stringify(`Tracked Kit ${id} returned successfully.`)
             };
         } catch (err) {
             context.error('Database error: ', err);
@@ -113,7 +114,7 @@ app.http('deleteAsset', {
             }
             return {
                 status: 500,
-                body: JSON.stringify("Failed to delete asset.")
+                body: JSON.stringify("Failed to return tracked kit.")
             }
         }
     }
