@@ -3,13 +3,10 @@ const { OnBehalfOfCredential } = require('@azure/identity');
 const sql = require('mssql');
 const jwt = require('jsonwebtoken');
 
-function identifyChanges(data, originalData) {
+function identifyChanges(lastUsed) {
     changes = []
-    console.log(new Date(originalData.LastUsed ))
-    console.log(originalData.LastUsed)
-    console.log(new Date())
 
-    if(new Date().toDateString() != new Date(originalData.LastUsed).toDateString()) changes.push({"LastUsed" : originalData.LastUsed})
+    if(new Date().toDateString() != new Date(lastUsed).toDateString()) changes.push({"LastUsed" : lastUsed})
 
     return {"From" : changes};
 }
@@ -40,9 +37,9 @@ app.http('aRenewTrackedKit', {
         
         const userAccessToken = authHeader.split(' ')[1]
         const bothData = await request.json()
-        const assetData = bothData[0];
-        const originalData = bothData[1];
-        const changedRaw = identifyChanges(assetData, originalData)
+        const assetID = bothData[0];
+        const originalDate = bothData[1];
+        const changedRaw = identifyChanges(originalDate)
         if(changedRaw.From.length == 0) {
             return { 
                 status: 200,
@@ -74,7 +71,7 @@ app.http('aRenewTrackedKit', {
             
             await pool.connect();
             const result = await pool.request()
-                .input('ID', sql.Int, assetData.ID)
+                .input('ID', sql.Int, assetID)
                 .input('LastUsed', sql.DateTime, new Date())
                 .query(`
                     UPDATE assets.KitTracking
@@ -84,7 +81,7 @@ app.http('aRenewTrackedKit', {
                 `);
 
                 const result2 = await pool.request()
-                .input('ID', sql.NVarChar, `${assetData.ID}`)
+                .input('ID', sql.NVarChar, `${assetID}`)
                 .input('User', sql.NVarChar, user)
                 .input('Notes', sql.NVarChar, changes)
                 .query(`
@@ -93,7 +90,7 @@ app.http('aRenewTrackedKit', {
                     `);
             return { 
                 status: 200,
-                body: JSON.stringify(`Tracked Kit Instance ${assetData.ID} renewed successfully.`)
+                body: JSON.stringify(`Tracked Kit Instance ${assetID} renewed successfully.`)
             };
         } catch (err) {
             context.error('Database error: ', err);

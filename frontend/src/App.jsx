@@ -13,6 +13,7 @@ import Loans from './pages/Loans/Loans';
 import KitTracking from './pages/KitTracking/List';
 import CreateKT from './pages/KitTracking/Create';
 import EditKT from './pages/KitTracking/Edit';
+import SelfRenewKT from './pages/KitTracking/SelfRenew';
 
 
 function App() {
@@ -50,6 +51,9 @@ function App() {
               } />
               <Route path="/kit-tracking/:id/edit" element={
                 <RequireAuth><EditKT /></RequireAuth>
+                } />
+              <Route path="/kit-tracking/:id/renew" element={
+                <RequireAuth><SelfRenewKT /></RequireAuth>
                 } />
 
             <Route path="/*" element={<Error404 />} />

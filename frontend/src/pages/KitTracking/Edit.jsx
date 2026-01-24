@@ -134,7 +134,7 @@ export default function EditKT() {
                     'Authorization': `Bearer ${accessToken}`,
                     'x-functions-key': `${import.meta.env.VITE_CREATE_API_KEY}`
                 },
-                body: JSON.stringify([form, originalData])
+                body: JSON.stringify([form.ID, originalData.LastUsed])
             });
 
             setUploading(false)

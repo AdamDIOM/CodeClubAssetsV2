@@ -24,7 +24,8 @@ app.http('getTrackedKit', {
         const authHeader = request.headers.get('Authorization')
         const specificID = request.headers.get('ID') || null;
         const assetID = request.headers.get('AssetID') || null;
-
+        const flag = request.headers.get('Flag') || null;
+        console.log(`asset id ${assetID}`)
         if(!authHeader.startsWith('Bearer ')) {
             return {status:401, body: JSON.stringify("Missing or invalid Authorization header")}
         }
@@ -53,6 +54,15 @@ app.http('getTrackedKit', {
             
                 console.log(specificID)
             if(specificID) {
+                if(flag && flag == "selfRenew"){
+                    result = await pool.request()
+                    .input('searchTerm', sql.NVarChar, `${specificID}`)
+                    .query(`SELECT ID, LastUsed, History
+                        FROM [assets].[KitTracking] KT
+                        WHERE KT.ID = @searchTerm
+                        `);
+                }
+                else{
                 result = await pool.request()
                     .input('searchTerm', sql.NVarChar, `${specificID}`)
                     .query(`SELECT KT.ID, AssetID, Assets.Name AS AssetName, STRING_AGG(Members.Name, ', ') AS Members, FirstUsed, LastUsed, LengthKept, History, DateReturned
@@ -61,6 +71,7 @@ app.http('getTrackedKit', {
                         INNER JOIN [assets].[KitTrackingPeople] KTP ON KT.ID = KTP.KTID
                         INNER JOIN [membership].[Members] Members ON KTP.MemberID = Members.ID WHERE KT.ID = @searchTerm
                         GROUP BY KT.ID, AssetID, Assets.Name,  FirstUsed, LastUsed, LengthKept, History, DateReturned`);
+                }
             }
             else if(assetID) {
                 result = await pool.request()
