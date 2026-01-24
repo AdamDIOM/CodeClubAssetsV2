@@ -6,7 +6,7 @@ export const msalConfig = {
         authority: "https://login.microsoftonline.com/5eb26f0a-532d-45f6-b1b4-58c84e52a7c5",
         redirectUri: isLocalhost
         ? "http://localhost:5173/"
-        : "https://assets-dev.codeclub.im/",
+        : "https://assets.codeclub.im/",
         navigateToLoginRequestUrl: false,
     },
 //     system: {
