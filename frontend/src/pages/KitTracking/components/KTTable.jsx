@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 
 function InnerDiv({loan}){
     const startDate = new Date(loan.FirstUsed);
+    const lastUsedDate = new Date(loan.LastUsed);
     const returnDate = new Date(startDate);
     returnDate.setDate(startDate.getDate() + loan.LengthKept);
     return (
@@ -18,6 +19,7 @@ function InnerDiv({loan}){
             <strong>Asset: </strong><p>{loan.AssetID + ": " + loan.AssetName || '—'}</p>
             <strong>User(s): </strong><p>{loan.Members || '—'}</p>
             <strong>First Used Date: </strong><p>{startDate.toLocaleDateString() || '—'}</p>
+            <strong>Last Used Date: </strong><p>{lastUsedDate.toLocaleDateString() || '—'}</p>
             <strong>Length Kept: </strong><p>{loan.LengthKept || '—'}</p>
             <strong>Current Return Date: </strong><p>{returnDate.toLocaleDateString() || '—'}</p>
             <strong>ID:</strong><p>{loan.ID || '—'}</p>
@@ -53,7 +55,7 @@ export default function KTTable({ loans, edit }) {
           {loans.map((loan) => {
             const isExpanded = expandedRows.includes(loan.ID)
 
-            const startDate = new Date(loan.FirstUsed);
+            const startDate = new Date(loan.LastUsed);
             const returnDate = new Date(startDate);
             returnDate.setDate(startDate.getDate() + loan.LengthKept);
             const daysRemaining = Math.ceil((returnDate - new Date()) / 86400000)
