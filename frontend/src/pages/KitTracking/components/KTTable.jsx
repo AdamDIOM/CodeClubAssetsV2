@@ -58,8 +58,16 @@ export default function KTTable({ loans, edit }) {
             const startDate = new Date(loan.LastUsed);
             const returnDate = new Date(startDate);
             returnDate.setDate(startDate.getDate() + loan.LengthKept);
-            const daysRemaining = Math.ceil((returnDate - new Date()) / 86400000)
+            const daysRemaining = Math.ceil((returnDate - new Date()) / 86400000) ?? -1
             var status = daysRemaining != null ? `${daysRemaining} days remaining` : '—';
+            var colourStatus = 0;
+            if (daysRemaining < 0) {
+                colourStatus = 1;
+            } else if (daysRemaining == 0 || daysRemaining == 1) {
+                colourStatus = 2;
+            } else if (daysRemaining < 8) {
+                colourStatus = 3;
+            }
 
             return (
                 <React.Fragment key={loan.ID}>
@@ -69,9 +77,9 @@ export default function KTTable({ loans, edit }) {
                         active:bg-club-orange-400 dark:active:bg-club-green-800
                         cursor-pointer text-neutral-700 dark:text-neutral-300
                         ${isExpanded ? 'bg-club-orange-100 dark:bg-club-green-600': ''}
-                        ${status == "Overdue" ? 'bg-red-200 dark:bg-red-900' : ''}
-                        ${status == "Due Today" ? 'bg-orange-200 dark:bg-orange-800' : ''}
-                        ${status == "Due Next Session" ? 'bg-yellow-100 dark:bg-yellow-700' : ''}
+                        ${colourStatus == 1 ? 'bg-red-200 dark:bg-red-900' : ''}
+                        ${colourStatus == 2 ? 'bg-orange-200 dark:bg-orange-800' : ''}
+                        ${colourStatus == 3 ? 'bg-yellow-100 dark:bg-yellow-700' : ''}
                         `} onClick={() => toggleRow(loan.ID)}>
                         <td className="px-4 py-2 border-b text-center w-8 table-cell">
                             <FiChevronDown

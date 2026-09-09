@@ -87,7 +87,8 @@ app.http('getTrackedKit', {
                         INNER JOIN [assets].[KitTrackingPeople] KTP ON KT.ID = KTP.KTID
                         INNER JOIN [membership].[Members] Members ON KTP.MemberID = Members.ID
                         WHERE KT.History = 0
-                        GROUP BY KT.ID, AssetID, Assets.Name,  FirstUsed, LastUsed, LengthKept`);// WHERE Name LIKE @searchTerm`);
+                        GROUP BY KT.ID, AssetID, Assets.Name,  FirstUsed, LastUsed, LengthKept
+                        ORDER BY AssetID`);// WHERE Name LIKE @searchTerm`);
             }
             const kitList = result.recordset;
             //console.log(loans)

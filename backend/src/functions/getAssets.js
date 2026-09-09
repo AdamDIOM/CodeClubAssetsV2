@@ -60,12 +60,12 @@ app.http('getAssets', {
             }
             else if(filter == "KT") {
                 result = await pool.request()
-                    .query('SELECT ID, Name, DefaultUseLength FROM assets.Assets');
+                    .query('SELECT ID, Name, DefaultUseLength FROM assets.Assets ORDER BY assets.Assets.ID');
             }
             else{
                 result = await pool.request()
                     .input('searchTerm', sql.NVarChar, `%${searchTerm}%`)
-                    .query('SELECT * FROM assets.Assets WHERE Name LIKE @searchTerm');
+                    .query('SELECT * FROM assets.Assets WHERE Name LIKE @searchTerm ORDER BY assets.Assets.ID');
             }
             const assets = result.recordset;
         
