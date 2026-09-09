@@ -63,7 +63,7 @@ app.http('getLoans', {
                         Loans.ID, AssetID, Assets.Name AssetName, Members.Name MemberName, DateBorrowed, LengthBorrowed
                         FROM assets.Loans Loans
                         INNER JOIN assets.Assets Assets ON Loans.AssetID = Assets.ID
-                        INNER JOIN membership.Members on Loans.MemberID = membership.Members.I
+                        INNER JOIN membership.Members on Loans.MemberID = membership.Members.ID
                         ORDER BY DateBorrowed`);// WHERE Name LIKE @searchTerm`);
             }
             const loans = result.recordset;
